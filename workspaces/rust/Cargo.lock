@@ -1230,6 +1230,7 @@ dependencies = [
  "tabled",
  "thiserror",
  "tokio",
+ "tokio-util",
 ]
 
 [[package]]

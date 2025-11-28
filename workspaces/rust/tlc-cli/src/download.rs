@@ -9,7 +9,9 @@ use tokio::fs::{self, File};
 use tokio::io::AsyncWriteExt;
 use tokio::sync::Semaphore;
 
-pub async fn run(args: &DownloadArgs) -> Result<()> {
+use tokio_util::sync::CancellationToken;
+
+pub async fn run(args: &DownloadArgs, token: CancellationToken) -> Result<()> {
     let r#type = args.r#type.as_ref().ok_or_else(|| anyhow::anyhow!("Type is required"))?;
     let start = args.start.as_ref().ok_or_else(|| anyhow::anyhow!("Start date is required"))?;
     let end = args.end.as_ref().ok_or_else(|| anyhow::anyhow!("End date is required"))?;
@@ -47,8 +49,14 @@ pub async fn run(args: &DownloadArgs) -> Result<()> {
 
         let overall_pb = overall_pb.clone();
 
+        let token = token.clone();
         let handle = tokio::spawn(async move {
             let _permit = permit; // Hold permit until end of scope
+            
+            // Check for cancellation before starting
+            if token.is_cancelled() {
+                return Ok::<(), anyhow::Error>(());
+            }
             
             if output_path.exists() {
                 pb.finish_with_message(format!("{} (Skipped)", filename));
@@ -56,7 +64,12 @@ pub async fn run(args: &DownloadArgs) -> Result<()> {
                 return Ok::<(), anyhow::Error>(());
             }
 
-            let response = client.get(&url).send().await?;
+            let response = tokio::select! {
+                res = client.get(&url).send() => res?,
+                _ = token.cancelled() => {
+                    return Ok(());
+                }
+            };
             
             if !response.status().is_success() {
                 pb.finish_with_message(format!("{} (Failed: {})", filename, response.status()));
@@ -72,7 +85,16 @@ pub async fn run(args: &DownloadArgs) -> Result<()> {
 
             while let Some(chunk) = futures::StreamExt::next(&mut stream).await {
                 let chunk = chunk?;
-                file.write_all(&chunk).await?;
+                
+                tokio::select! {
+                     _ = file.write_all(&chunk) => {},
+                     _ = token.cancelled() => {
+                         // Clean up partial file if cancelled
+                         drop(file);
+                         let _ = fs::remove_file(&output_path).await;
+                         return Ok(());
+                     }
+                }
                 pb.inc(chunk.len() as u64);
             }
 

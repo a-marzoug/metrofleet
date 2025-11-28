@@ -4,9 +4,11 @@ A high-performance, concurrent CLI tool for downloading NYC Taxi & Limousine Com
 
 ## Features
 
-- **High Performance**: Built with Rust and `tokio` for efficient asynchronous I/O.
-- **Concurrent Downloads**: Downloads multiple files in parallel to maximize bandwidth usage.
-- **Smart Skipping**: Skips files that already exist locally.
+- **Interactive Wizard**: Step-by-step guide to downloading data.
+- **Bulk Download**: Download multiple months of data in parallel.
+- **Graceful Shutdown**: Safely stop downloads with `Ctrl+C`.
+- **Progress Bars**: Visual feedback for overall progress and individual file downloads.
+- **Resumable**: Skips files that have already been downloaded.
 - **Progress Tracking**: Rich visual feedback with progress bars for individual files and overall status.
 - **Cross-Platform**: Works on Linux, macOS, and Windows.
 

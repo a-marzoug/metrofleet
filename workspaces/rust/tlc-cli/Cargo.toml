@@ -1,0 +1,21 @@
+[package]
+name = "tlc-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+tokio = { version = "1.36", features = ["full"] }
+reqwest = { version = "0.11", default-features = false, features = [
+    "json",
+    "stream",
+    "rustls-tls",
+] }
+indicatif = "0.17"
+dialoguer = "0.11"
+tabled = "0.15"
+anyhow = "1.0"
+thiserror = "1.0"
+futures = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

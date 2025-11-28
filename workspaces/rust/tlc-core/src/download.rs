@@ -104,13 +104,7 @@ pub async fn run(options: &DownloadOptions, token: CancellationToken) -> Result<
         
         let permit = semaphore.clone().acquire_owned().await.map_err(|e| TlcError::Other(anyhow::anyhow!(e)))?;
         let client = client.clone();
-        let pb = m.add(ProgressBar::new(size));
-        pb.set_style(ProgressStyle::default_bar()
-            .template("{spinner:.green} {msg} [{bar:20}] {bytes}/{total_bytes} ({bytes_per_sec})")
-            .unwrap()
-            .progress_chars("#>-"));
-        pb.set_message(format!("{}...", filename));
-
+        let m_clone = m.clone();
         let overall_pb = overall_pb.clone();
         let token = token.clone();
 
@@ -122,10 +116,20 @@ pub async fn run(options: &DownloadOptions, token: CancellationToken) -> Result<
             }
             
             if output_path.exists() {
-                pb.finish_with_message(format!("{} (Skipped)", filename));
+                // Use println via MultiProgress to avoid interfering with bars
+                let _ = m_clone.println(format!("{} (Skipped)", filename));
                 overall_pb.inc(size); // Increment by full size if skipped
                 return Ok(());
             }
+
+            let pb = m_clone.add(ProgressBar::new(size));
+            pb.set_style(ProgressStyle::default_bar()
+                .template("{spinner:.green} {msg} [{bar:20}] {bytes}/{total_bytes} ({bytes_per_sec})")
+                .unwrap()
+                .progress_chars("#>-"));
+            pb.set_message(format!("{}...", filename));
+
+
 
             let response = tokio::select! {
                 res = client.get(&url).send() => res.map_err(TlcError::Middleware)?,
@@ -172,12 +176,13 @@ pub async fn run(options: &DownloadOptions, token: CancellationToken) -> Result<
 
 
             // Basic validation: check if file size matches content length (if known)
-            if total_size > 0 {
+            // Basic validation: check if file size matches content length (if known)
+            if content_len > 0 {
                  let metadata = file.metadata().await.map_err(TlcError::Io)?;
-                 if metadata.len() != total_size {
+                 if metadata.len() != content_len {
                      drop(file);
                      let _ = fs::remove_file(&output_path).await;
-                     return Err(TlcError::DownloadFailed(format!("File size mismatch for {}", filename)));
+                     return Err(TlcError::DownloadFailed(format!("File size mismatch for {}: expected {}, got {}", filename, content_len, metadata.len())));
                  }
             }
 

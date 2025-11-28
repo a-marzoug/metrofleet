@@ -32,25 +32,60 @@ async fn main() -> Result<()> {
         }
     });
 
+    // Helper to show shutdown spinner
+    let show_shutdown = || {
+        let pb = indicatif::ProgressBar::new_spinner();
+        pb.set_style(indicatif::ProgressStyle::default_spinner()
+            .template("{spinner:.red} {msg}").unwrap()
+            .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]));
+        pb.set_message("Shutting down...");
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+        std::thread::sleep(std::time::Duration::from_millis(1000)); // Simulate brief cleanup/ack
+        pb.finish_and_clear();
+        println!("Goodbye! 👋");
+    };
+
+    let run_wizard_safe = || -> Result<Option<cli::DownloadArgs>> {
+        match wizard::run_interactive_download() {
+            Ok(a) => Ok(Some(a)),
+            Err(e) => {
+                // Check for TlcError::Io
+                if let Some(tlc_err) = e.downcast_ref::<tlc_core::error::TlcError>() {
+                    if let tlc_core::error::TlcError::Io(io_err) = tlc_err {
+                        if io_err.kind() == std::io::ErrorKind::Interrupted {
+                            show_shutdown();
+                            return Ok(None);
+                        }
+                    }
+                }
+                
+                if let Some(io_err) = e.downcast_ref::<std::io::Error>() {
+                    if io_err.kind() == std::io::ErrorKind::Interrupted {
+                        show_shutdown();
+                        return Ok(None);
+                    }
+                }
+                
+                // Also check if it's a dialoguer error which might wrap IO
+                let err_str = e.to_string().to_lowercase();
+                let err_debug = format!("{:?}", e).to_lowercase();
+                
+                if err_str.contains("interrupted") || err_str.contains("io error: read interrupted") || err_debug.contains("read interrupted") {
+                     show_shutdown();
+                     return Ok(None);
+                }
+                
+                Err(e)
+            }
+        }
+    };
+
     match &cli.command {
         Some(Commands::Download(args)) => {
             let final_args = if args.r#type.is_none() || args.start.is_none() || args.end.is_none() {
-                match wizard::run_interactive_download() {
-                    Ok(a) => a,
-                    Err(e) => {
-                        if let Some(io_err) = e.downcast_ref::<std::io::Error>() {
-                            if io_err.kind() == std::io::ErrorKind::Interrupted {
-                                println!("\nInterrupted by user.");
-                                return Ok(());
-                            }
-                        }
-                        // Also check if it's a dialoguer error which might wrap IO
-                        if e.to_string().contains("interrupted") {
-                             println!("\nInterrupted by user.");
-                             return Ok(());
-                        }
-                        return Err(e);
-                    }
+                match run_wizard_safe()? {
+                    Some(a) => a,
+                    None => return Ok(()),
                 }
             } else {
                 args.clone()
@@ -105,7 +140,10 @@ async fn main() -> Result<()> {
             println!("Audit command not yet implemented: {:?}", args);
         }
         Some(Commands::Wizard) => {
-            let args = wizard::run_interactive_download()?;
+            let args = match run_wizard_safe()? {
+                Some(a) => a,
+                None => return Ok(()),
+            };
             let options = DownloadOptions {
                 r#type: args.r#type.expect("Type should be set"),
                 start: args.start.expect("Start should be set"),

@@ -1,7 +1,7 @@
 use crate::cli::DownloadArgs;
 use anyhow::Result;
-use dialoguer::{theme::ColorfulTheme, Input, Select};
 use dialoguer::console::Term;
+use dialoguer::{theme::ColorfulTheme, Input, Select};
 
 pub fn run_interactive_download() -> Result<DownloadArgs> {
     let theme = ColorfulTheme::default();
@@ -10,14 +10,16 @@ pub fn run_interactive_download() -> Result<DownloadArgs> {
     term.clear_screen()?;
     println!("🚖 Welcome to TLC-cli Interactive Mode 🚖");
     println!("-------------------------------------------");
+    println!("Use arrow keys to navigate. Press 'Esc' or Ctrl+C to quit.");
 
     let types = vec!["yellow", "green", "fhv", "fhvhv"];
     let type_selection = Select::with_theme(&theme)
         .with_prompt("Select Data Category")
         .default(0)
         .items(&types)
-        .interact()?;
-    
+        .interact_opt()?
+        .ok_or_else(|| anyhow::anyhow!("Interrupted by user"))?;
+
     let selected_type = types[type_selection].to_string();
 
     let modes = vec!["Single Month", "Date Range"];
@@ -25,7 +27,8 @@ pub fn run_interactive_download() -> Result<DownloadArgs> {
         .with_prompt("Select Mode")
         .default(0)
         .items(&modes)
-        .interact()?;
+        .interact_opt()?
+        .ok_or_else(|| anyhow::anyhow!("Interrupted by user"))?;
 
     let start_date: String;
     let end_date: String;
@@ -52,7 +55,7 @@ pub fn run_interactive_download() -> Result<DownloadArgs> {
             .with_prompt("Start Date (YYYY-MM)")
             .validate_with(validate_date)
             .interact_text()?;
-        
+
         end_date = Input::with_theme(&theme)
             .with_prompt("End Date (YYYY-MM)")
             .validate_with(validate_date)

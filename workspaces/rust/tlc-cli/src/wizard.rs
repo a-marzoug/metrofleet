@@ -31,7 +31,7 @@ pub fn run_interactive_download() -> Result<DownloadArgs> {
     let end_date: String;
 
     let validate_date = |input: &String| -> Result<(), String> {
-        if crate::utils::parse_date(input).is_ok() {
+        if tlc_core::utils::parse_date(input).is_ok() {
             Ok(())
         } else {
             Err("Invalid date format. Please use YYYY-MM (e.g., 2023-01)".to_string())

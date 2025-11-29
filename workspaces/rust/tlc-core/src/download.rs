@@ -1,6 +1,7 @@
 use crate::utils::{generate_date_range, generate_url};
 use crate::error::TlcError;
-use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use indicatif::{MultiProgress, ProgressBar, ProgressStyle, ProgressState};
+use std::fmt;
 use reqwest::Client;
 use std::path::Path;
 use std::sync::Arc;
@@ -91,9 +92,18 @@ pub async fn run(options: &DownloadOptions, token: CancellationToken) -> Result<
     let m = MultiProgress::new();
     let overall_pb = m.add(ProgressBar::new(total_size));
     overall_pb.set_style(ProgressStyle::default_bar()
-        .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta}) {msg}")
+        .with_key("compact_bytes", |state: &ProgressState, w: &mut dyn fmt::Write| {
+            let pos = state.pos() as f64 / 1_048_576.0; // Convert to MiB
+            let len = state.len().unwrap_or(0) as f64 / 1_048_576.0;
+            write!(w, "{:.2}/{:.2} MB", pos, len).unwrap();
+        })
+        .with_key("compact_speed", |state: &ProgressState, w: &mut dyn fmt::Write| {
+            let speed = state.per_sec() / 1_048_576.0;
+            write!(w, "{:.2} MB/s", speed).unwrap();
+        })
+        .template("{spinner:.green} [{bar:40.cyan/dim}] {compact_bytes:.green} ({compact_speed:.red}, eta {eta:.cyan}) {msg}")
         .unwrap()
-        .progress_chars("#>-"));
+        .progress_chars("━╸━"));
     overall_pb.set_message("Overall Progress");
 
     let mut handles = Vec::new();
@@ -124,9 +134,18 @@ pub async fn run(options: &DownloadOptions, token: CancellationToken) -> Result<
 
             let pb = m_clone.add(ProgressBar::new(size));
             pb.set_style(ProgressStyle::default_bar()
-                .template("{spinner:.green} {msg} [{bar:20}] {bytes}/{total_bytes} ({bytes_per_sec})")
+                .with_key("compact_bytes", |state: &ProgressState, w: &mut dyn fmt::Write| {
+                    let pos = state.pos() as f64 / 1_048_576.0; // Convert to MiB
+                    let len = state.len().unwrap_or(0) as f64 / 1_048_576.0;
+                    write!(w, "{:.2}/{:.2} MB", pos, len).unwrap();
+                })
+                .with_key("compact_speed", |state: &ProgressState, w: &mut dyn fmt::Write| {
+                    let speed = state.per_sec() / 1_048_576.0;
+                    write!(w, "{:.2} MB/s", speed).unwrap();
+                })
+                .template("{msg}\n{spinner:.green} [{bar:40.green/dim}] {compact_bytes:.green} ({compact_speed:.red}, eta {eta:.cyan})")
                 .unwrap()
-                .progress_chars("#>-"));
+                .progress_chars("━╸━"));
             pb.set_message(format!("{}...", filename));
 
 
@@ -199,6 +218,11 @@ pub async fn run(options: &DownloadOptions, token: CancellationToken) -> Result<
             Ok(Err(e)) => eprintln!("Download error: {}", e),
             Err(e) => eprintln!("Task join error: {}", e),
         }
+    }
+
+    if token.is_cancelled() {
+        overall_pb.abandon_with_message("Download interrupted");
+        return Ok(());
     }
 
     overall_pb.finish_with_message("All downloads complete");

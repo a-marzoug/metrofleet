@@ -1,0 +1,12 @@
+metrofleet_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
+      user: "{{ env_var('POSTGRES_USER', 'admin') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD', 'password') }}"
+      dbname: "{{ env_var('POSTGRES_DB', 'metrofleet') }}"
+      schema: dbt_dev
+      port: 5432
+      threads: 4

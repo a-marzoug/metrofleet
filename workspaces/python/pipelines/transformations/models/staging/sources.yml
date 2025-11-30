@@ -1,0 +1,12 @@
+sources:
+  - name: staging
+    database: metrofleet
+    schema: public
+    tables:
+      - name: raw_yellow_trips
+        description: "Raw data loaded from Parquet files via Dagster"
+        loaded_at_field: tpep_pickup_datetime
+        columns:
+          - name: tpep_pickup_datetime
+            tests:
+              - not_null

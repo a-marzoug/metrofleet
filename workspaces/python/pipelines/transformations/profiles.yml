@@ -1,4 +1,4 @@
-metrofleet_dbt:
+transformations:
   target: dev
   outputs:
     dev:

@@ -1,0 +1,41 @@
+services:
+  # 1. The Data Warehouse
+  warehouse:
+    image: postgres:15
+    container_name: metrofleet_warehouse
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  # 2. The Orchestrator (Dagster UI & Daemon)
+  # We will build this container based on your python requirements
+
+  orchestrator:
+    build:
+      context: . # The build context is the root of the repo
+      dockerfile: infra/docker/Dockerfile.dagster # Path to the file we just created
+    container_name: metrofleet_orchestrator
+    environment:
+      POSTGRES_HOST: warehouse
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # This ensures files are saved to the mounted volume, not inside the container's temp layer
+      DATA_ROOT: "/opt/dagster/app/data"
+      PYTHONPATH: "/opt/dagster/app/workspaces/python/pipelines"
+    volumes:
+      - ./workspaces/python:/opt/dagster/app/workspaces/python # Live code reloading for Python
+      - ./workspaces/rust:/opt/dagster/app/workspaces/rust # Access to Rust source
+      - ./data:/opt/dagster/app/data # Shared data folder
+    ports:
+      - "3000:3000"
+    depends_on:
+      - warehouse
+
+volumes:
+  pg_data:

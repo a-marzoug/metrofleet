@@ -1,4 +1,4 @@
-# TLC-CLI 
+# TLC-CLI
 
 A high-performance, concurrent CLI tool for downloading NYC Taxi & Limousine Commission (TLC) Trip Record data.
 

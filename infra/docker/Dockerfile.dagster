@@ -1,0 +1,62 @@
+# ==========================================
+# Stage 1: Build Rust CLI
+# ==========================================
+FROM rust:1.83-slim-bookworm AS rust-builder
+WORKDIR /app
+COPY workspaces/rust .
+# Build release binary
+RUN cargo build --release
+
+# ==========================================
+# Stage 2: Runtime Environment
+# ==========================================
+FROM python:3.13-slim
+
+# 1. Get uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# 2. Install System Dependencies
+# Removed 'curl' and 'clang' as we don't need to compile Rust at runtime anymore
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# 3. Create Non-Root User
+RUN groupadd -r dagster && useradd -r -g dagster -d /opt/dagster -s /bin/bash dagster
+
+# 4. Set up Dagster Home
+ENV DAGSTER_HOME=/opt/dagster/dagster_home
+# Create only the home dir first
+RUN mkdir -p $DAGSTER_HOME && chown -R dagster:dagster /opt/dagster/dagster_home
+
+WORKDIR /opt/dagster/app
+
+# 5. Install Python Dependencies
+# Copy project definition and README (required for valid pyproject.toml)
+COPY workspaces/python/pyproject.toml workspaces/python/README.md ./
+
+ENV UV_HTTP_TIMEOUT=300
+
+# Install dependencies into the system python
+# We use 'compile' to generate a requirements.txt from pyproject.toml, ensuring we only install dependencies
+# and not the project itself (which avoids the 'no-root' issue and setuptools errors).
+RUN uv pip compile pyproject.toml -o requirements.txt \
+    && uv pip install --system -r requirements.txt
+
+# 6. Install Rust Binary
+COPY --from=rust-builder /app/target/release/tlc-cli /usr/local/bin/tlc-cli
+RUN chmod +x /usr/local/bin/tlc-cli
+
+# 7. Configure Dagster
+RUN echo "telemetry: \n  enabled: false" > $DAGSTER_HOME/dagster.yaml
+
+# 8. Create folder structure and switch user
+RUN mkdir -p /opt/dagster/app/data /opt/dagster/app/workspaces/python /opt/dagster/app/workspaces/rust \
+    && chown -R dagster:dagster /opt/dagster/app
+
+USER dagster
+
+# 9. Start Command
+CMD ["dagster", "dev", "-h", "0.0.0.0", "-p", "3000", "-w", "workspaces/python/workspace.yml"]

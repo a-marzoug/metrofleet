@@ -28,8 +28,8 @@ MANIFEST
 # Virtual Environments
 venv/
 .venv/
-env/
-.env/
+env
+.env
 
 # IDEs
 .vscode/

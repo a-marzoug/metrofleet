@@ -1,0 +1,24 @@
+[project]
+name = "python-ws"
+version = "0.1.0"
+description = "Python workspace"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "connectorx>=0.4.4",
+    "dagster>=1.12.3",
+    "dagster-dbt>=0.28.3",
+    "dagster-postgres>=0.28.3",
+    "dagster-webserver>=1.12.3",
+    "dbt-postgres>=1.9.1",
+    "polars>=1.35.2",
+    "psycopg2-binary>=2.9.11",
+    "pandas>=2.3.3",
+    "pyarrow>=22.0.0",
+]
+
+[tool.uv.workspace]
+members = ["pipelines", "analytics"]
+
+[dependency-groups]
+dev = ["ruff>=0.14.7"]

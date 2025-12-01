@@ -22,3 +22,10 @@ members = ["pipelines", "analytics"]
 
 [dependency-groups]
 dev = ["ruff>=0.14.7"]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff]
+lint.select = ["F", "I"]
+fix = true

@@ -1,16 +1,18 @@
 import subprocess
+
 import polars as pl
-from dagster import asset, AssetExecutionContext, MonthlyPartitionsDefinition
+from dagster import AssetExecutionContext, MonthlyPartitionsDefinition, asset
+
 from ..resources.database import PostgresResource
 
 # 1. Define the timeframe we care about (e.g., from 2020 to now)
-monthly_partitions = MonthlyPartitionsDefinition(start_date="2020-01-01")
+monthly_partitions = MonthlyPartitionsDefinition(start_date='2020-01-01')
 
 # Constants
-RAW_DATA_PATH = "/opt/dagster/app/data/raw"
+RAW_DATA_PATH = '/opt/dagster/app/data/raw'
 
 
-@asset(group_name="ingestion", partitions_def=monthly_partitions)
+@asset(group_name='ingestion', partitions_def=monthly_partitions)
 def raw_taxi_file(context: AssetExecutionContext) -> str:
     """
     1. EXTRACT: Calls the Rust CLI to download data for a specific month.
@@ -20,41 +22,41 @@ def raw_taxi_file(context: AssetExecutionContext) -> str:
     partition_date_str = context.partition_key
     yyyy_mm = partition_date_str[:7]
 
-    context.log.info(f"Triggering Rust CLI for: {yyyy_mm}")
+    context.log.info(f'Triggering Rust CLI for: {yyyy_mm}')
 
     # Construct the command based on your README
     # We set start and end to the same month to download just one file per partition
     # CHANGED: Use the pre-compiled binary 'tlc-cli' instead of 'cargo run'
     cmd = [
-        "tlc-cli",
-        "download",
-        "--type",
-        "yellow",
-        "--start",
+        'tlc-cli',
+        'download',
+        '--type',
+        'yellow',
+        '--start',
         yyyy_mm,
-        "--end",
+        '--end',
         yyyy_mm,
-        "--output",
+        '--output',
         RAW_DATA_PATH,
-        "--concurrency",
-        "4",  # Be nice to the API inside docker
+        '--concurrency',
+        '4',  # Be nice to the API inside docker
     ]
 
     # Run the command
     result = subprocess.run(cmd, capture_output=True, text=True)
 
     if result.returncode != 0:
-        raise Exception(f"Rust CLI failed: {result.stderr}")
+        raise Exception(f'Rust CLI failed: {result.stderr}')
 
     # Log the CLI output (progress bars won't show well in logs, but final status will)
     context.log.info(result.stdout)
 
     # Return the expected path so the downstream asset knows where to look
-    return f"{RAW_DATA_PATH}/yellow_tripdata_{yyyy_mm}.parquet"
+    return f'{RAW_DATA_PATH}/yellow_tripdata_{yyyy_mm}.parquet'
 
 
 @asset(
-    group_name="ingestion",
+    group_name='ingestion',
     partitions_def=monthly_partitions,  # Downstream must share the partition definition
     deps=[raw_taxi_file],
 )
@@ -66,9 +68,9 @@ def raw_trips_table(context: AssetExecutionContext, database: PostgresResource):
     yyyy_mm = partition_date_str[:7]
 
     # Construct the path specifically for this month
-    parquet_path = f"{RAW_DATA_PATH}/yellow_tripdata_{yyyy_mm}.parquet"
+    parquet_path = f'{RAW_DATA_PATH}/yellow_tripdata_{yyyy_mm}.parquet'
 
-    context.log.info(f"Loading {parquet_path} into Postgres...")
+    context.log.info(f'Loading {parquet_path} into Postgres...')
 
     try:
         # Lazy load with Polars
@@ -112,23 +114,23 @@ def raw_trips_table(context: AssetExecutionContext, database: PostgresResource):
             try:
                 conn.execute(delete_query)
                 conn.commit()
-                context.log.info(f"Deleted existing data for {yyyy_mm}")
+                context.log.info(f'Deleted existing data for {yyyy_mm}')
                 table_exists = True
             except Exception as e:
-                context.log.info(f"Skipping delete (table might not exist yet): {e}")
+                context.log.info(f'Skipping delete (table might not exist yet): {e}')
                 table_exists = False
 
-        context.log.info(f"Dataframe shape: {df_collected.shape}")
+        context.log.info(f'Dataframe shape: {df_collected.shape}')
 
         if df_collected.height > 0:
             # 1. Ensure Table Exists
             if not table_exists:
-                context.log.info("Table does not exist. Creating table structure...")
+                context.log.info('Table does not exist. Creating table structure...')
                 df_collected.head(0).write_database(
-                    table_name="raw_yellow_trips",
+                    table_name='raw_yellow_trips',
                     connection=connection_string,
-                    if_table_exists="replace",
-                    engine="sqlalchemy",
+                    if_table_exists='replace',
+                    engine='sqlalchemy',
                 )
 
             # 2. Filter Data to Match Partition
@@ -148,45 +150,45 @@ def raw_trips_table(context: AssetExecutionContext, database: PostgresResource):
             else:
                 end_date = datetime.datetime(year, month + 1, 1)
 
-            context.log.info(f"Filtering data for range: [{start_date}, {end_date})")
+            context.log.info(f'Filtering data for range: [{start_date}, {end_date})')
 
             # Filter using Polars
             # We assume 'tpep_pickup_datetime' is the partitioning column
             df_filtered = df_collected.filter(
-                (pl.col("tpep_pickup_datetime") >= start_date)
-                & (pl.col("tpep_pickup_datetime") < end_date)
+                (pl.col('tpep_pickup_datetime') >= start_date)
+                & (pl.col('tpep_pickup_datetime') < end_date)
             )
 
             rows_removed = df_collected.height - df_filtered.height
             if rows_removed > 0:
                 context.log.warning(
-                    f"Filtered out {rows_removed} rows that were outside the partition month."
+                    f'Filtered out {rows_removed} rows that were outside the partition month.'
                 )
 
             if df_filtered.height == 0:
-                context.log.warning("No data left after filtering! Skipping write.")
+                context.log.warning('No data left after filtering! Skipping write.')
                 return
 
             # 3. Bulk Load using COPY
             import io
 
-            context.log.info("Preparing in-memory CSV for COPY...")
+            context.log.info('Preparing in-memory CSV for COPY...')
             csv_buffer = io.BytesIO()
             df_filtered.write_csv(csv_buffer)
             csv_buffer.seek(0)
 
-            context.log.info("Executing Postgres COPY command...")
+            context.log.info('Executing Postgres COPY command...')
 
             # Get a raw psycopg2 connection from the SQLAlchemy engine
             raw_conn = engine.raw_connection()
             try:
                 with raw_conn.cursor() as cursor:
                     cursor.copy_expert(
-                        "COPY raw_yellow_trips FROM STDIN WITH CSV HEADER", csv_buffer
+                        'COPY raw_yellow_trips FROM STDIN WITH CSV HEADER', csv_buffer
                     )
                 raw_conn.commit()
                 context.log.info(
-                    f"Successfully loaded {df_collected.height} rows using COPY."
+                    f'Successfully loaded {df_collected.height} rows using COPY.'
                 )
             except Exception as e:
                 raw_conn.rollback()
@@ -195,8 +197,8 @@ def raw_trips_table(context: AssetExecutionContext, database: PostgresResource):
                 raw_conn.close()
 
         else:
-            context.log.warning("Dataframe is empty, skipping write.")
+            context.log.warning('Dataframe is empty, skipping write.')
 
     except Exception as e:
-        context.log.error(f"Failed to load {parquet_path}: {e}")
+        context.log.error(f'Failed to load {parquet_path}: {e}')
         raise e

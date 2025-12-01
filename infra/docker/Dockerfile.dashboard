@@ -1,0 +1,42 @@
+# 1. Get uv
+FROM ghcr.io/astral-sh/uv:latest AS uv
+
+# 2. Python Base
+FROM python:3.13-slim
+
+# Copy uv
+COPY --from=uv /uv /uvx /bin/
+
+# 3. Install System Dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# 4. Create Non-Root User
+RUN groupadd -r dashboard && useradd -r -g dashboard -d /opt/dashboard -s /bin/bash dashboard
+
+# 5. Set up Home & Workdir
+ENV HOME=/opt/dashboard
+WORKDIR /opt/dashboard/app
+
+# 6. Install Python Dependencies
+# Copy project definition and README
+COPY workspaces/python/pyproject.toml workspaces/python/README.md ./
+
+ENV UV_HTTP_TIMEOUT=300
+
+# Install dependencies into the system python
+RUN uv pip compile pyproject.toml -o requirements.txt \
+    && uv pip install --system -r requirements.txt
+
+# 7. Copy Code
+COPY workspaces/python/apps/admin_dashboard ./apps/admin_dashboard
+
+# 8. Permissions
+RUN chown -R dashboard:dashboard /opt/dashboard
+
+USER dashboard
+
+# 9. Run Streamlit
+EXPOSE 8501
+CMD ["streamlit", "run", "apps/admin_dashboard/app.py", "--server.address=0.0.0.0"]

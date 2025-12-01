@@ -37,5 +37,23 @@ services:
     depends_on:
       - warehouse
 
+  dashboard:
+    build:
+      context: . 
+      dockerfile: infra/docker/Dockerfile.dashboard
+    container_name: metrofleet_dashboard
+    environment:
+      POSTGRES_HOST: warehouse
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      # Mount the code for live editing
+      - ./workspaces/python/apps/admin_dashboard:/opt/dashboard/app/apps/admin_dashboard
+    ports:
+      - "8501:8501"
+    depends_on:
+      - warehouse
+
 volumes:
   pg_data:

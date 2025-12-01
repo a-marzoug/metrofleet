@@ -15,10 +15,17 @@ dependencies = [
     "psycopg2-binary>=2.9.11",
     "pandas>=2.3.3",
     "pyarrow>=22.0.0",
+    "streamlit>=1.50.0",
+    "plotly>=6.5.0",
+    "sqlalchemy>=2.0.44",
 ]
 
 [tool.uv.workspace]
-members = ["pipelines", "analytics"]
+members = [
+    "pipelines",
+    "analytics",
+    "apps",
+]
 
 [dependency-groups]
 dev = ["ruff>=0.14.7"]

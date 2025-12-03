@@ -55,5 +55,25 @@ services:
     depends_on:
       - warehouse
 
+  notebook:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.notebook
+    container_name: metrofleet_notebook
+    environment:
+      POSTGRES_HOST: warehouse
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./workspaces/python/analytics:/app/analytics # Mount the analytics folder
+      - ./data:/app/data # Mount data for saving models
+    ports:
+      - "8888:8888"
+    # Overwrite the CMD to start Jupyter instead of Streamlit
+    command: ["jupyter", "lab", "--ip=0.0.0.0", "--allow-root", "--no-browser", "--notebook-dir=/app/analytics"]
+    depends_on:
+      - warehouse
+
 volumes:
   pg_data:

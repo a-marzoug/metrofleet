@@ -34,16 +34,11 @@ RUN mkdir -p $DAGSTER_HOME && chown -R dagster:dagster /opt/dagster/dagster_home
 WORKDIR /opt/dagster/app
 
 # 5. Install Python Dependencies
-# Copy project definition and README (required for valid pyproject.toml)
-COPY workspaces/python/pyproject.toml workspaces/python/README.md ./
+COPY workspaces/python/pipelines/pyproject.toml ./
 
 ENV UV_HTTP_TIMEOUT=300
 
-# Install dependencies into the system python
-# We use 'compile' to generate a requirements.txt from pyproject.toml, ensuring we only install dependencies
-# and not the project itself (which avoids the 'no-root' issue and setuptools errors).
-RUN uv pip compile pyproject.toml -o requirements.txt \
-    && uv pip install --system -r requirements.txt
+RUN uv pip install --system -r pyproject.toml
 
 # 6. Install Rust Binary
 COPY --from=rust-builder /app/target/release/tlc-cli /usr/local/bin/tlc-cli

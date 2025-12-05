@@ -25,6 +25,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      # MLflow tracking endpoint for training code
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      # Where the training script should write the production model file.
+      # This path is inside the mounted `./workspaces/python` directory so it
+      # will be persisted on the host and accessible to other services.
+      PROD_MODEL_PATH: /opt/dagster/app/workspaces/python/data/models/price_model_prod.pkl
       # This ensures files are saved to the mounted volume, not inside the container's temp layer
       DATA_ROOT: "/opt/dagster/app/data"
       PYTHONPATH: "/opt/dagster/app/workspaces/python/pipelines"
@@ -47,9 +53,13 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      # Let dashboard know where the production model will be written
+      PROD_MODEL_PATH: /opt/dagster/app/workspaces/python/data/models/price_model_prod.pkl
     volumes:
       # Mount the code for live editing
       - ./workspaces/python/apps/admin_dashboard:/opt/dashboard/app/apps/admin_dashboard
+      # Mount the models directory so the dashboard/fastapi can load the model
+      - ./workspaces/python/data/models:/opt/dagster/app/workspaces/python/data/models
     ports:
       - "8501:8501"
     depends_on:
@@ -65,15 +75,38 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      # Make the production model path available in the notebook environment
+      PROD_MODEL_PATH: /app/data/models/price_model_prod.pkl
     volumes:
       - ./workspaces/python/analytics:/app/analytics # Mount the analytics folder
       - ./data:/app/data # Mount data for saving models
+      - ./workspaces/python/data/models:/app/data/models
     ports:
       - "8888:8888"
     # Overwrite the CMD to start Jupyter instead of Streamlit
     command: ["jupyter", "lab", "--ip=0.0.0.0", "--allow-root", "--no-browser", "--notebook-dir=/app/analytics"]
     depends_on:
       - warehouse
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.mlflow
+    container_name: metrofleet_mlflow
+    environment:
+      # We still need these for the DB connection and Artifact storage
+      MLFLOW_BACKEND_STORE_URI: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@warehouse:5432/${POSTGRES_DB}
+      MLFLOW_DEFAULT_ARTIFACT_ROOT: /app/data/mlflow_artifacts
+      # Note: MLFLOW_SERVER_HOST is now in the Dockerfile, so we don't strictly need it here,
+      # but leaving it doesn't hurt. Also expose PROD_MODEL_PATH for consistency (optional).
+      PROD_MODEL_PATH: /app/data/models/price_model_prod.pkl
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "5000:5000"
+    depends_on:
+      - warehouse 
+
 
 volumes:
   pg_data:

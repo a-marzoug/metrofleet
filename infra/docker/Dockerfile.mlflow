@@ -1,0 +1,57 @@
+# 1. Get uv
+FROM ghcr.io/astral-sh/uv:latest AS uv
+
+# 2. Python Base
+FROM python:3.13-slim
+
+# Copy uv
+COPY --from=uv /uv /uvx /bin/
+
+# 3. Install System Dependencies
+# build-essential is required for compiling numpy and psycopg2
+# libpq-dev is required for psycopg2
+# cmake is required for compiling pyarrow (dependency of mlflow)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    cmake \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 4. Create Non-Root User
+RUN groupadd -r mlflow && useradd -r -g mlflow -d /opt/mlflow -s /bin/bash mlflow
+
+# 5. Set up Home & Workdir
+ENV HOME=/opt/mlflow
+WORKDIR /opt/mlflow/app
+
+# 6. Install Python Dependencies
+ENV UV_HTTP_TIMEOUT=300
+
+RUN uv pip install --system --no-cache-dir \
+    mlflow==3.6.0 \
+    psycopg2-binary==2.9.11 \
+    gunicorn
+
+# 7. Permissions
+RUN chown -R mlflow:mlflow /opt/mlflow
+
+# 8. Switch User
+USER mlflow
+
+# 9. Expose Port
+EXPOSE 5000
+
+# 10. CRITICAL FIX: Hardcode MLflow Host Configuration
+# This tells MLflow's internal logic to allow requests from any host (0.0.0.0)
+# preventing the "Invalid Host header" 403 error.
+ENV MLFLOW_SERVER_HOST=0.0.0.0
+ENV MLFLOW_SERVER_PORT=5000
+# Allow all hosts for development to avoid DNS rebinding host header checks
+# In production, replace this with a comma-separated list of allowed hosts.
+ENV MLFLOW_SERVER_ALLOWED_HOSTS='*'
+
+# 11. Entrypoint
+# We run MLflow using Gunicorn WSGI instead of the 'mlflow server' CLI
+# This is the standard fix for the 403 Host Header issue in containers
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "--access-logfile", "-", "--error-logfile", "-", "mlflow.server:app"]

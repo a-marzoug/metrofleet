@@ -1,6 +1,9 @@
 import os
 import pickle
 
+import mlflow
+import mlflow.sklearn
+import numpy as np
 import polars as pl
 import xgboost as xgb
 from dotenv import load_dotenv
@@ -14,7 +17,17 @@ load_dotenv()
 
 # Config
 DB_URI = f'postgresql://{os.getenv("POSTGRES_USER")}:{os.getenv("POSTGRES_PASSWORD")}@{os.getenv("POSTGRES_HOST")}:5432/{os.getenv("POSTGRES_DB")}'
-MODEL_PATH = '/app/data/models/price_model.pkl'
+# Allow overriding the production model path via env var. Default to a path
+# under the current working directory so containerized runs don't try to write
+# to root-owned `/app` (which can be permission-restricted).
+PROD_MODEL_PATH = os.getenv(
+    'PROD_MODEL_PATH',
+    os.path.join(os.getcwd(), 'data', 'models', 'price_model_prod.pkl'),
+)
+# Default MLflow tracking URI can be overridden with env var `MLFLOW_TRACKING_URI`.
+MLFLOW_TRACKING_URI = os.getenv(
+    'MLFLOW_TRACKING_URI', 'http://metrofleet_mlflow:5000'
+)  # Internal Docker URL
 
 
 def load_data():
@@ -28,7 +41,7 @@ def load_data():
         total_amount
     FROM dbt_dev.fct_trips
     WHERE total_amount > 0 AND total_amount < 200 AND trip_distance > 0
-    LIMIT 100000
+    TABLESAMPLE SYSTEM (10);
     """
     df = pl.read_database_uri(query=query, uri=DB_URI, engine='connectorx')
 
@@ -48,63 +61,80 @@ def load_data():
 
 
 def train():
-    df = load_data()
+    # 1. Setup MLflow
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    mlflow.set_experiment('price_prediction_v1')
 
-    # Select columns
-    X = df.select(
-        [
+    with mlflow.start_run():
+        df = load_data()
+
+        X = df.select(
+            [
+                'pickup_location_id',
+                'dropoff_location_id',
+                'pickup_hour',
+                'pickup_day',
+                'trip_distance',
+            ]
+        ).to_pandas()
+        y = df.select('total_amount').to_pandas()['total_amount']
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
+
+        # 2. Hyperparameters
+        params = {
+            'n_estimators': 100,
+            'learning_rate': 0.05,
+            'max_depth': 10,
+            'base_score': float(np.mean(y_train)),  # Fix for XGBoost serialization
+        }
+
+        # 3. Pipeline
+        categorical_features = [
             'pickup_location_id',
             'dropoff_location_id',
-            'pickup_hour',
             'pickup_day',
-            'trip_distance',
         ]
-    ).to_pandas()
+        numerical_features = ['pickup_hour', 'trip_distance']
 
-    y = df.select('total_amount').to_pandas()['total_amount']
+        preprocessor = ColumnTransformer(
+            transformers=[
+                (
+                    'cat',
+                    OneHotEncoder(handle_unknown='ignore', sparse_output=False),
+                    categorical_features,
+                ),
+                ('num', StandardScaler(), numerical_features),
+            ],
+            verbose_feature_names_out=False,
+        )
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+        pipeline = Pipeline(
+            steps=[
+                ('preprocessor', preprocessor),
+                ('regressor', xgb.XGBRegressor(n_jobs=1, verbosity=0, **params)),
+            ]
+        )
 
-    categorical_features = ['pickup_location_id', 'dropoff_location_id', 'pickup_day']
-    numerical_features = ['pickup_hour', 'trip_distance']
+        print('Training Pipeline...')
+        pipeline.fit(X_train, y_train)
 
-    preprocessor = ColumnTransformer(
-        transformers=[
-            (
-                'cat',
-                OneHotEncoder(handle_unknown='ignore', sparse_output=False),
-                categorical_features,
-            ),
-            ('num', StandardScaler(), numerical_features),
-        ],
-        verbose_feature_names_out=False,
-    )
+        # 4. Evaluate
+        preds = pipeline.predict(X_test)
+        mae = mean_absolute_error(y_test, preds)
 
-    # Standard XGBoost 1.7.6 Setup
-    pipeline = Pipeline(
-        steps=[
-            ('preprocessor', preprocessor),
-            (
-                'regressor',
-                xgb.XGBRegressor(n_estimators=100, learning_rate=0.05, n_jobs=-1),
-            ),
-        ]
-    )
+        print(f'✅ MAE: ${mae:.2f}')
+        mlflow.log_metric('mae', mae)
+        mlflow.log_params(params)
 
-    print('Training XGBoost Pipeline...')
-    pipeline.fit(X_train, y_train)
-
-    preds = pipeline.predict(X_test)
-    mae = mean_absolute_error(y_test, preds)
-    print(f'✅ Training Complete. MAE: ${mae:.2f}')
-
-    # Save Pickle
-    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
-    with open(MODEL_PATH, 'wb') as f:
-        pickle.dump(pipeline, f)
-    print(f'💾 Model saved to {MODEL_PATH}')
+        # 5. Save "Production" Copy (For FastAPI to load easily)
+        prod_dir = os.path.dirname(PROD_MODEL_PATH)
+        os.makedirs(prod_dir, exist_ok=True)
+        with open(PROD_MODEL_PATH, 'wb') as f:
+            pickle.dump(pipeline, f)
+        print(f'💾 Production model saved to {PROD_MODEL_PATH}')
 
 
 if __name__ == '__main__':

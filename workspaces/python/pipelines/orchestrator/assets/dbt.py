@@ -7,6 +7,9 @@ from dagster_dbt import (
     DbtCliResource,
     dbt_assets,
 )
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # This path matches the internal structure of the container, but can be overridden
 DBT_PROJECT_DIR = os.getenv(

@@ -48,7 +48,12 @@ RUN chmod +x /usr/local/bin/tlc-cli
 RUN echo "telemetry: \n  enabled: false" > $DAGSTER_HOME/dagster.yaml
 
 # 8. Create folder structure and switch user
-RUN mkdir -p /opt/dagster/app/data /opt/dagster/app/workspaces/python /opt/dagster/app/workspaces/rust \
+# Ensure the models directory exists and is owned by the `dagster` user so
+# processes running as that user can write model artifacts.
+RUN mkdir -p /opt/dagster/app/data \
+    /opt/dagster/app/workspaces/python \
+    /opt/dagster/app/workspaces/rust \
+    /opt/dagster/app/workspaces/python/data/models \
     && chown -R dagster:dagster /opt/dagster/app
 
 USER dagster

@@ -57,6 +57,8 @@ def raw_taxi_file(context: AssetExecutionContext) -> str:
 
 @asset(
     group_name='ingestion',
+    key_prefix=['public'],
+    name='raw_yellow_trips',
     partitions_def=monthly_partitions,  # Downstream must share the partition definition
     deps=[raw_taxi_file],
 )

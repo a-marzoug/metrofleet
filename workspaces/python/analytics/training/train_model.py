@@ -41,7 +41,7 @@ def load_data():
         total_amount
     FROM dbt_dev.fct_trips
     WHERE total_amount > 0 AND total_amount < 200 AND trip_distance > 0
-    TABLESAMPLE SYSTEM (10);
+    LIMIT 100000
     """
     df = pl.read_database_uri(query=query, uri=DB_URI, engine='connectorx')
 

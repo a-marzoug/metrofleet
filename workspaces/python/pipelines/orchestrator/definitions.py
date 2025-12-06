@@ -8,7 +8,7 @@ from .resources.database import PostgresResource
 
 # Load assets
 ingestion_assets = load_assets_from_modules([ingestion])
-dbt_assets = load_assets_from_modules([dbt])
+dbt_assets = load_assets_from_modules([dbt], group_name='transformation')
 training_assets = load_assets_from_modules([training])
 
 # Define the connection using Environment Variables

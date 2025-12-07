@@ -30,7 +30,7 @@ services:
       # Where the training script should write the production model file.
       # This path is inside the mounted `./workspaces/python` directory so it
       # will be persisted on the host and accessible to other services.
-      PROD_MODEL_PATH: /opt/dagster/app/workspaces/python/data/models/price_model_prod.pkl
+      PROD_MODEL_PATH: /opt/dagster/app/data/models/price_model_prod.pkl
       # This ensures files are saved to the mounted volume, not inside the container's temp layer
       DATA_ROOT: "/opt/dagster/app/data"
       PYTHONPATH: "/opt/dagster/app/workspaces/python/pipelines"
@@ -54,12 +54,12 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       # Let dashboard know where the production model will be written
-      PROD_MODEL_PATH: /opt/dagster/app/workspaces/python/data/models/price_model_prod.pkl
+      PROD_MODEL_PATH: /opt/dashboard/app/data/models/price_model_prod.pkl
     volumes:
       # Mount the code for live editing
       - ./workspaces/python/apps/admin_dashboard:/opt/dashboard/app/apps/admin_dashboard
       # Mount the models directory so the dashboard/fastapi can load the model
-      - ./workspaces/python/data/models:/opt/dagster/app/workspaces/python/data/models
+      - ./data:/opt/dashboard/app/data
     ports:
       - "8501:8501"
     depends_on:
@@ -80,7 +80,7 @@ services:
     volumes:
       - ./workspaces/python/analytics:/app/analytics # Mount the analytics folder
       - ./data:/app/data # Mount data for saving models
-      - ./workspaces/python/data/models:/app/data/models
+
     ports:
       - "8888:8888"
     # Overwrite the CMD to start Jupyter instead of Streamlit
@@ -107,6 +107,24 @@ services:
     depends_on:
       - warehouse 
 
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.api
+    container_name: metrofleet_api
+    volumes:
+      # Mount the data folder so it can read the .pkl file
+      - ./data:/app/data
+      # Mount code for hot-reloading during dev
+      - ./workspaces/python/apps/api_gateway:/app/workspaces/python/apps/api_gateway
+    ports:
+      - "8000:8000"
+    # Overwrite command for hot-reloading
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    # Fix the Python path so uvicorn finds 'main.py' if mounted differently, 
+    # but strictly speaking, the Dockerfile COPYs main.py to /app, so default is fine.
+    # However, if using the volume mount above, we should point to it:
+    working_dir: /app
 
 volumes:
   pg_data:

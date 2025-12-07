@@ -9,6 +9,7 @@ resolution-markers = [
 [manifest]
 members = [
     "analytics",
+    "api-gateway",
     "apps",
     "pipelines",
     "python-ws",
@@ -66,6 +67,44 @@ wheels = [
 name = "analytics"
 version = "0.1.0"
 source = { virtual = "analytics" }
+dependencies = [
+    { name = "connectorx" },
+    { name = "jupyterlab" },
+    { name = "matplotlib" },
+    { name = "mlflow" },
+    { name = "onnx" },
+    { name = "onnxmltools" },
+    { name = "pandas" },
+    { name = "plotly" },
+    { name = "polars" },
+    { name = "psycopg2-binary" },
+    { name = "python-dotenv" },
+    { name = "scikit-learn" },
+    { name = "seaborn" },
+    { name = "skl2onnx" },
+    { name = "sqlalchemy" },
+    { name = "xgboost" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "connectorx", specifier = ">=0.4.4" },
+    { name = "jupyterlab", specifier = ">=4.5.0" },
+    { name = "matplotlib", specifier = ">=3.10.7" },
+    { name = "mlflow", specifier = ">=3.6.0" },
+    { name = "onnx", specifier = ">=1.20.0" },
+    { name = "onnxmltools", specifier = ">=1.14.0" },
+    { name = "pandas", specifier = ">=2.3.3" },
+    { name = "plotly", specifier = ">=6.5.0" },
+    { name = "polars", specifier = ">=1.35.2" },
+    { name = "psycopg2-binary", specifier = ">=2.9.11" },
+    { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "scikit-learn", specifier = ">=1.7.2" },
+    { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "skl2onnx", specifier = ">=1.19.1" },
+    { name = "sqlalchemy", specifier = ">=2.0.44" },
+    { name = "xgboost", specifier = ">=3.1.2" },
+]
 
 [[package]]
 name = "annotated-doc"
@@ -107,6 +146,11 @@ wheels = [
 ]
 
 [[package]]
+name = "api-gateway"
+version = "0.1.0"
+source = { virtual = "apps/api_gateway" }
+
+[[package]]
 name = "appnope"
 version = "0.1.4"
 source = { registry = "https://pypi.org/simple" }
@@ -119,6 +163,28 @@ wheels = [
 name = "apps"
 version = "0.1.0"
 source = { virtual = "apps" }
+dependencies = [
+    { name = "connectorx" },
+    { name = "pandas" },
+    { name = "plotly" },
+    { name = "polars" },
+    { name = "psycopg2-binary" },
+    { name = "python-dotenv" },
+    { name = "sqlalchemy" },
+    { name = "streamlit" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "connectorx", specifier = ">=0.4.4" },
+    { name = "pandas", specifier = ">=2.3.3" },
+    { name = "plotly", specifier = ">=6.5.0" },
+    { name = "polars", specifier = ">=1.35.2" },
+    { name = "psycopg2-binary", specifier = ">=2.9.11" },
+    { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "sqlalchemy", specifier = ">=2.0.44" },
+    { name = "streamlit", specifier = ">=1.50.0" },
+]
 
 [[package]]
 name = "argon2-cffi"
@@ -917,6 +983,17 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b2/9d/c3b43da9515bd270df0f80548d9944e389870713cc1fe2b8fb35fe2bcefd/docstring_parser-0.17.0.tar.gz", hash = "sha256:583de4a309722b3315439bb31d64ba3eebada841f2e2cee23b99df001434c912", size = 27442, upload-time = "2025-07-21T07:35:01.868Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/55/e2/2537ebcff11c1ee1ff17d8d0b6f4db75873e3b0fb32c2d4a2ee31ecb310a/docstring_parser-0.17.0-py3-none-any.whl", hash = "sha256:cf2569abd23dce8099b300f9b4fa8191e9582dda731fd533daf54c4551658708", size = 36896, upload-time = "2025-07-21T07:35:00.684Z" },
+]
+
+[[package]]
+name = "dotenv"
+version = "0.9.9"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dotenv" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b2/b7/545d2c10c1fc15e48653c91efde329a790f2eecfbbf2bd16003b5db2bab0/dotenv-0.9.9-py2.py3-none-any.whl", hash = "sha256:29cf74a087b31dafdb5a446b6d7e11cbce8ed2741540e2339c69fbef92c94ce9", size = 1892, upload-time = "2025-02-19T22:15:01.647Z" },
 ]
 
 [[package]]
@@ -2594,6 +2671,46 @@ wheels = [
 name = "pipelines"
 version = "0.1.0"
 source = { virtual = "pipelines" }
+dependencies = [
+    { name = "connectorx" },
+    { name = "dagster" },
+    { name = "dagster-dbt" },
+    { name = "dagster-postgres" },
+    { name = "dagster-webserver" },
+    { name = "dbt-postgres" },
+    { name = "matplotlib" },
+    { name = "mlflow" },
+    { name = "pandas" },
+    { name = "plotly" },
+    { name = "polars" },
+    { name = "psycopg2-binary" },
+    { name = "pyarrow" },
+    { name = "scikit-learn" },
+    { name = "seaborn" },
+    { name = "sqlalchemy" },
+    { name = "xgboost" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "connectorx", specifier = ">=0.4.4" },
+    { name = "dagster", specifier = ">=1.12.3" },
+    { name = "dagster-dbt", specifier = ">=0.28.3" },
+    { name = "dagster-postgres", specifier = ">=0.28.3" },
+    { name = "dagster-webserver", specifier = ">=1.12.3" },
+    { name = "dbt-postgres", specifier = ">=1.9.1" },
+    { name = "matplotlib", specifier = ">=3.10.7" },
+    { name = "mlflow", specifier = ">=3.6.0" },
+    { name = "pandas", specifier = ">=2.3.3" },
+    { name = "plotly", specifier = ">=6.5.0" },
+    { name = "polars", specifier = ">=1.35.2" },
+    { name = "psycopg2-binary", specifier = ">=2.9.11" },
+    { name = "pyarrow", specifier = ">=22.0.0" },
+    { name = "scikit-learn", specifier = ">=1.7.2" },
+    { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "sqlalchemy", specifier = ">=2.0.44" },
+    { name = "xgboost", specifier = ">=3.1.2" },
+]
 
 [[package]]
 name = "platformdirs"
@@ -3049,6 +3166,8 @@ dependencies = [
     { name = "dagster-postgres" },
     { name = "dagster-webserver" },
     { name = "dbt-postgres" },
+    { name = "dotenv" },
+    { name = "fastapi" },
     { name = "jupyterlab" },
     { name = "matplotlib" },
     { name = "mlflow" },
@@ -3059,12 +3178,14 @@ dependencies = [
     { name = "polars" },
     { name = "psycopg2-binary" },
     { name = "pyarrow" },
+    { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "scikit-learn" },
     { name = "seaborn" },
     { name = "skl2onnx" },
     { name = "sqlalchemy" },
     { name = "streamlit" },
+    { name = "uvicorn", extra = ["standard"] },
     { name = "xgboost" },
 ]
 
@@ -3081,6 +3202,8 @@ requires-dist = [
     { name = "dagster-postgres", specifier = ">=0.28.3" },
     { name = "dagster-webserver", specifier = ">=1.12.3" },
     { name = "dbt-postgres", specifier = ">=1.9.1" },
+    { name = "dotenv", specifier = ">=0.9.9" },
+    { name = "fastapi", specifier = ">=0.123.3" },
     { name = "jupyterlab", specifier = ">=4.5.0" },
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "mlflow", specifier = ">=3.6.0" },
@@ -3091,12 +3214,14 @@ requires-dist = [
     { name = "polars", specifier = ">=1.35.2" },
     { name = "psycopg2-binary", specifier = ">=2.9.11" },
     { name = "pyarrow", specifier = ">=22.0.0" },
+    { name = "pydantic", specifier = ">=2.12.5" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "scikit-learn", specifier = ">=1.7.2" },
     { name = "seaborn", specifier = ">=0.13.2" },
     { name = "skl2onnx", specifier = ">=1.19.1" },
     { name = "sqlalchemy", specifier = ">=2.0.44" },
     { name = "streamlit", specifier = ">=1.50.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.38.0" },
     { name = "xgboost", specifier = ">=3.1.2" },
 ]
 

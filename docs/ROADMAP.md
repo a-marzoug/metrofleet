@@ -6,23 +6,23 @@
 
 - [x] **Infrastructure:** Dockerized Postgres & Dagster.
 - [x] **Ingestion:** High-performance Rust CLI for TLC data.
-- [x] **Warehousing:** "Delete-Write" idempotent loading pattern.
 - [x] **Transformation:** dbt project (Staging -> Core -> Marts).
 - [x] **UI:** Streamlit Admin Dashboard for Revenue Analytics.
 
-## Phase 2: Dynamic Pricing Engine (🚧 In Progress)
+## Phase 2: Dynamic Pricing Engine (✅ Completed)
 
 **Goal:** Predict fare costs to reduce customer abandonment.
 
-- [ ] **EDA:** Jupyter Notebooks to correlate Distance/Time with Price.
-- [ ] **Modeling:** Train XGBoost Regression model.
-- [ ] **MLOps:** Pipeline to serialize and version the model artifact.
+- [x] **EDA:** Jupyter Notebooks (Polars) to correlate Distance/Time with Price.
+- [x] **Modeling:** Train XGBoost Regression model.
+- [x] **MLOps:** MLflow 3.x for Experiment Tracking.
+- [x] **Automation:** Dagster pipeline to retrain model on new data.
 
-## Phase 3: The Consumer App (Planned)
+## Phase 3: The Consumer App (🚧 In Progress)
 
-**Goal:** Allow users to get quotes via an API.
+**Goal:** Allow users to get quotes via an API and Web App.
 
-- [ ] **Backend:** FastAPI Gateway to serve predictions.
+- [x] **Backend:** FastAPI Microservice to serve `.pkl` model.
 - [ ] **Frontend:** Next.js + Tailwind React App.
 - [ ] **Integration:** Connect App to Pricing API.
 

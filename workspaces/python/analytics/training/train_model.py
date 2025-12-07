@@ -22,7 +22,18 @@ DB_URI = f'postgresql://{os.getenv("POSTGRES_USER")}:{os.getenv("POSTGRES_PASSWO
 # to root-owned `/app` (which can be permission-restricted).
 PROD_MODEL_PATH = os.getenv(
     'PROD_MODEL_PATH',
-    os.path.join(os.getcwd(), 'data', 'models', 'price_model_prod.pkl'),
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            '..',
+            '..',
+            '..',
+            'data',
+            'models',
+            'price_model_prod.pkl',
+        )
+    ),
 )
 # Default MLflow tracking URI can be overridden with env var `MLFLOW_TRACKING_URI`.
 MLFLOW_TRACKING_URI = os.getenv(

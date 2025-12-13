@@ -50,7 +50,10 @@ def load_data():
         dropoff_location_id,
         pickup_datetime,
         trip_distance,
-        total_amount
+        total_amount,
+        coalesce(precip_mm, 0) as precip_mm,
+        coalesce(temp_c, 15) as temp_c,
+        case when is_holiday then 1 else 0 end as is_holiday_int
     FROM dbt_dev.fct_trips
     WHERE total_amount > 0 AND total_amount < 200 AND trip_distance > 0
     LIMIT 100000
@@ -66,6 +69,9 @@ def load_data():
             pl.col('dropoff_location_id').cast(pl.Int64),
             pl.col('trip_distance').cast(pl.Float32),
             pl.col('total_amount').cast(pl.Float32),
+            pl.col('precip_mm').cast(pl.Float32),
+            pl.col('temp_c').cast(pl.Float32),
+            pl.col('is_holiday_int').cast(pl.Int64),
         ]
     ).drop_nulls()
 
@@ -75,7 +81,7 @@ def load_data():
 def train(args):
     # 1. Setup MLflow
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-    mlflow.set_experiment('price_prediction_v1')
+    mlflow.set_experiment('price_prediction_v2')
 
     with mlflow.start_run():
         df = load_data()
@@ -87,6 +93,9 @@ def train(args):
                 'pickup_hour',
                 'pickup_day',
                 'trip_distance',
+                'precip_mm',
+                'temp_c',
+                'is_holiday_int',
             ]
         ).to_pandas()
         y = df.select('total_amount').to_pandas()['total_amount']
@@ -111,7 +120,13 @@ def train(args):
             'dropoff_location_id',
             'pickup_day',
         ]
-        numerical_features = ['pickup_hour', 'trip_distance']
+        numerical_features = [
+            'pickup_hour',
+            'trip_distance',
+            'precip_mm',
+            'temp_c',
+            'is_holiday_int',
+        ]
 
         preprocessor = ColumnTransformer(
             transformers=[

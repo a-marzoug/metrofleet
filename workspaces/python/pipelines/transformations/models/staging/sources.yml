@@ -10,3 +10,10 @@ sources:
           - name: tpep_pickup_datetime
             tests:
               - not_null
+      - name: raw_weather
+        description: "Hourly weather data from Open-Meteo"
+        loaded_at_field: timestamp
+
+      - name: raw_holidays
+        description: "US/NY Public Holidays"
+        loaded_at_field: date

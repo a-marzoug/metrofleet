@@ -29,7 +29,7 @@ if not os.path.exists(MANIFEST_PATH):
     )
 
 
-class MetroFleetDbtTranslator(DagsterDbtTranslator):
+class MetrofleetDbtTranslator(DagsterDbtTranslator):
     def get_asset_key(self, dbt_resource_props):
         """
         Custom logic to map dbt nodes to Dagster Asset Keys.
@@ -37,21 +37,30 @@ class MetroFleetDbtTranslator(DagsterDbtTranslator):
         node_type = dbt_resource_props['resource_type']
         name = dbt_resource_props['name']
 
-        # 1. Map dbt Sources to Upstream Assets
         if node_type == 'source':
-            # If dbt says "source('staging', 'raw_yellow_trips')",
-            # we tell Dagster to look for an asset named "raw_yellow_trips"
-            # (If you used key_prefix=["public"] in ingestion, use AssetKey(["public", name]))
+            # --- 1. Weather & Holidays Mapping (New) ---
+            # In dbt sources.yml, the table is named "raw_weather"
+            # In weather.py, the function is named "raw_weather_data"
+            if name == 'raw_weather':
+                return AssetKey('raw_weather_data')
+
+            # In dbt sources.yml, the table is named "raw_holidays"
+            # In holidays.py, the function is named "raw_holidays_data"
+            if name == 'raw_holidays':
+                return AssetKey('raw_holidays_data')
+
+            # --- 2. Existing Taxi Logic (Keep as fallback) ---
+            # Matches 'raw_yellow_trips' -> AssetKey(['public', 'raw_yellow_trips'])
             return AssetKey(['public', name])
 
-        # 2. Map dbt Models to Asset Keys (removes the project name prefix)
+        # 3. Map dbt Models to Asset Keys
         return AssetKey(name)
 
 
 @dbt_assets(
     # 3. Point Dagster to the /tmp location
     manifest=MANIFEST_PATH,
-    dagster_dbt_translator=MetroFleetDbtTranslator(
+    dagster_dbt_translator=MetrofleetDbtTranslator(
         settings=DagsterDbtTranslatorSettings(enable_asset_checks=True)
     ),
 )

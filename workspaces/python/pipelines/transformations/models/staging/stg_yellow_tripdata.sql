@@ -1,11 +1,8 @@
 with source as (
-
     select * from {{ source('staging', 'raw_yellow_trips') }}
-
 ),
 
 renamed as (
-
     select
         -- Identifiers
         "VendorID" as vendor_id,
@@ -46,7 +43,6 @@ renamed as (
         "Airport_fee" as airport_fee
 
     from source
-
 )
 
 select * from renamed

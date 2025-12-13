@@ -1,3 +1,4 @@
+import argparse
 import os
 import pickle
 
@@ -37,7 +38,7 @@ PROD_MODEL_PATH = os.getenv(
 )
 # Default MLflow tracking URI can be overridden with env var `MLFLOW_TRACKING_URI`.
 MLFLOW_TRACKING_URI = os.getenv(
-    'MLFLOW_TRACKING_URI', 'http://metrofleet_mlflow:5000'
+    'MLFLOW_TRACKING_URI', 'sqlite:///mlflow.db'
 )  # Internal Docker URL
 
 
@@ -71,7 +72,7 @@ def load_data():
     return df
 
 
-def train():
+def train(args):
     # 1. Setup MLflow
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
     mlflow.set_experiment('price_prediction_v1')
@@ -95,12 +96,14 @@ def train():
         )
 
         # 2. Hyperparameters
-        params = {
-            'n_estimators': 100,
-            'learning_rate': 0.05,
-            'max_depth': 10,
-            'base_score': float(np.mean(y_train)),  # Fix for XGBoost serialization
-        }
+        model_params = {}
+        if args.model_type == 'xgboost':
+            model_params = {
+                'n_estimators': args.n_estimators,
+                'learning_rate': args.learning_rate,
+                'max_depth': args.max_depth,
+                'base_score': float(np.mean(y_train)),
+            }
 
         # 3. Pipeline
         categorical_features = [
@@ -125,7 +128,7 @@ def train():
         pipeline = Pipeline(
             steps=[
                 ('preprocessor', preprocessor),
-                ('regressor', xgb.XGBRegressor(n_jobs=1, verbosity=0, **params)),
+                ('regressor', xgb.XGBRegressor(n_jobs=1, verbosity=0, **model_params)),
             ]
         )
 
@@ -138,7 +141,8 @@ def train():
 
         print(f'✅ MAE: ${mae:.2f}')
         mlflow.log_metric('mae', mae)
-        mlflow.log_params(params)
+        mlflow.log_params(model_params)
+        mlflow.log_param('model_type', args.model_type)
 
         # 5. Save "Production" Copy (For FastAPI to load easily)
         prod_dir = os.path.dirname(PROD_MODEL_PATH)
@@ -149,4 +153,15 @@ def train():
 
 
 if __name__ == '__main__':
-    train()
+    parser = argparse.ArgumentParser()
+
+    # Define the "Knobs" you want to turn
+    parser.add_argument(
+        '--model_type', type=str, default='xgboost', choices=['xgboost', 'linear']
+    )
+    parser.add_argument('--n_estimators', type=int, default=100)
+    parser.add_argument('--learning_rate', type=float, default=0.05)
+    parser.add_argument('--max_depth', type=int, default=10)
+
+    args = parser.parse_args()
+    train(args)

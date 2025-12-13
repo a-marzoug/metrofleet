@@ -28,6 +28,10 @@ dependencies = [
     "fastapi>=0.123.3",
     "uvicorn[standard]>=0.38.0",
     "pydantic>=2.12.5",
+    "scipy>=1.16.3",
+    "networkx>=3.6",
+    "httpx>=0.28.1",
+    "holidays>=0.86",
 ]
 
 [tool.uv.workspace]

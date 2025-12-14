@@ -17,6 +17,7 @@ RUN uv pip compile pyproject.toml -o requirements.txt \
     && uv pip install --system -r requirements.txt
 
 # 4. Copy Code
+COPY workspaces/python/apps/api_gateway/app app/
 COPY workspaces/python/apps/api_gateway/main.py .
 
 # 5. Run Uvicorn

@@ -116,7 +116,7 @@ services:
       # Mount the data folder so it can read the .pkl file
       - ./data:/app/data
       # Mount code for hot-reloading during dev
-      - ./workspaces/python/apps/api_gateway:/app/workspaces/python/apps/api_gateway
+      - ./workspaces/python/apps/api_gateway:/app
     ports:
       - "8000:8000"
     # Overwrite command for hot-reloading

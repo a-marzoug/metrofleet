@@ -22,13 +22,11 @@ def price_model_training(context: AssetExecutionContext, config: TrainingConfig)
     """
     context.log.info('Starting Model Training...')
 
-    # Path to script inside the container
-    script_path = '/opt/dagster/app/workspaces/python/analytics/training/train_model.py'
-
-    # Construct Command Dynamically
+    # Run as a module so that relative imports in the package work
     cmd = [
         'python',
-        script_path,
+        '-m',
+        'analytics.training.train_model',
         '--model_type',
         config.model_type,
         '--n_estimators',
@@ -41,7 +39,14 @@ def price_model_training(context: AssetExecutionContext, config: TrainingConfig)
 
     # Run script
     # We pass the current environment variables so it inherits DB credentials
-    result = subprocess.run(cmd, capture_output=True, text=True, env={**os.environ})
+    # cwd must be the root of the python workspace for the module to be found
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        env={**os.environ},
+        cwd='/opt/dagster/app/workspaces/python',
+    )
 
     # Check result
     if result.returncode != 0:

@@ -1,16 +1,16 @@
 
-# Project Charter: MetroFleet Digital Transformation
+# Project Charter: Metrofleet Digital Transformation
 
-| Project Name | MetroFleet Next-Gen Platform |
+| Project Name | Metrofleet Next-Gen Platform |
 | :--- | :--- |
-| **Client** | MetroFleet Solutions, Inc. |
+| **Client** | Metrofleet Solutions, Inc. |
 | **Lead Architect** | A. Marzoug |
 | **Start Date** | Nov 26, 2025 |
 | **Duration** | 6 Weeks (Estimated) |
 
 ## Executive Summary
 
-MetroFleet is experiencing a 15% year-over-year decline in market share due to the lack of real-time data visibility and the inability to offer upfront pricing (Guaranteed Fare). This project aims to modernize MetroFleet's technical infrastructure to reach parity with Rideshare competitors.
+Metrofleet is experiencing a 15% year-over-year decline in market share due to the lack of real-time data visibility and the inability to offer upfront pricing (Guaranteed Fare). This project aims to modernize Metrofleet's technical infrastructure to reach parity with Rideshare competitors.
 
 ## Scope of Work
 

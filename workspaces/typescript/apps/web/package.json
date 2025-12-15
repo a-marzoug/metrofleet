@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "sdk": "workspace:*",
+    "@metrofleet/sdk": "workspace:*",
     "@types/bun": "latest"
   },
   "peerDependencies": {

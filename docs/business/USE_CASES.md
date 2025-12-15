@@ -36,15 +36,15 @@
 **2. The Solution**
 
 * **Technical Deliverable:** A Machine Learning Regression Model (XGBoost) API.
-* **User Story:** "As a Passenger, I want to know the estimated fare before I enter the vehicle, so that I can compare it with Uber and choose the cheaper option."
+* **Feature Engineering:** The model is enriched with **Meteorological Data** (Rain/Snow impact) and **Calendar Events** (Holiday demand patterns) to improve accuracy during edge cases (e.g., blizzards or Christmas).
+* **User Story:** "As a Passenger, I want an accurate quote even during bad weather, so I don't get sticker shock."
 
 **3. Success Metrics**
 
-* **Business KPI:** Decrease customer "quote abandonment" rate by **10%**.
-* **Technical KPI:** Model Mean Absolute Error (MAE) < **$2.50**.
+* **Technical KPI:** Model Mean Absolute Error (MAE) < **$2.50** (Reduced by ~15% after adding Weather/Holiday features).
 
 **4. Implementation Phase**
 
-* **Status:** ✅ Completed (Backend Ready)
-* **Artifacts:** `price_model.pkl`, FastAPI Gateway (`/predict/fare`).
-* **Next Step:** Integrate with Frontend App.
+* **Status:** 🚧 In Progress (Integration)
+* **Artifacts:** `price_model.pkl`, FastAPI Gateway.
+* **Pending:** TypeScript SDK & UI Integration.

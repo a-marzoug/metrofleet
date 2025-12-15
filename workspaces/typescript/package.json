@@ -1,0 +1,8 @@
+{
+  "name": "typescript",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
+}

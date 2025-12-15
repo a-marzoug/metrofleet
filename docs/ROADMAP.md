@@ -23,8 +23,10 @@
 **Goal:** Allow users to get quotes via an API and Web App.
 
 - [x] **Backend:** FastAPI Microservice to serve `.pkl` model.
-- [ ] **Frontend:** Next.js + Tailwind React App.
-- [ ] **Integration:** Connect App to Pricing API.
+- [x] **Contract:** Open API (Swagger) definition.
+- [ ] **SDK:** TypeScript Client Library for type-safe API communication.
+- [ ] **Frontend:** Next.js + Tailwind React App (Metrohail).
+- [ ] **Integration:** Connect Form UI to SDK.
 
 ## Phase 4: Fleet Optimization (Planned)
 

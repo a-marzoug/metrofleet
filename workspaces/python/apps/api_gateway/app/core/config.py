@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     version: str = 'v1'
     model_path: str = '/app/data/models/price_model_prod.pkl'
     min_fare: float = 2.50
+    api_key: str = 'dev-secret-key'
 
 
 settings = Settings()

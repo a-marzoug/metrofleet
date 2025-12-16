@@ -3,6 +3,7 @@
 import { DollarSign, MapPin, Clock, Route, Thermometer, CloudRain, Zap } from "lucide-react";
 import { ZoneSelect } from "./zone-select";
 import { Input } from "@/components/ui/input";
+import { motion } from "motion/react";
 
 interface FareFormProps {
   pickup: string;
@@ -21,7 +22,12 @@ export function FareForm({ pickup, dropoff, onPickupChange, onDropoffChange, dis
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-5">
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="bg-sidebar rounded-xl p-5"
+    >
       <div className="flex items-center gap-3 mb-5">
         <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center">
           <DollarSign className="w-5 h-5 text-primary" />
@@ -105,15 +111,17 @@ export function FareForm({ pickup, dropoff, onPickupChange, onDropoffChange, dis
           </div>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           type="submit"
           disabled={loading || !pickup || !dropoff}
           className="w-full h-12 rounded-lg font-semibold text-primary-foreground neon-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           <Zap className="w-5 h-5" />
           {loading ? "Predicting..." : "Predict Fare"}
-        </button>
+        </motion.button>
       </form>
-    </div>
+    </motion.div>
   );
 }

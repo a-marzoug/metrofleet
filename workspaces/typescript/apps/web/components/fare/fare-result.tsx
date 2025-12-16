@@ -17,8 +17,8 @@ export function FareResult({ result, open, onClose }: FareResultProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="bg-card border-border max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-primary" />
+          <DialogTitle className="flex items-center gap-2 text-primary">
+            <DollarSign className="w-5 h-5" />
             Fare Estimate
           </DialogTitle>
         </DialogHeader>
@@ -29,32 +29,38 @@ export function FareResult({ result, open, onClose }: FareResultProps) {
         </div>
 
         <div className="space-y-3 text-sm">
-          <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-            <MapPin className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg border border-border">
+            <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+              <MapPin className="w-3 h-3 text-primary" />
+            </div>
             <div>
               <p className="text-muted-foreground text-xs">Pickup</p>
-              <p>{result.pickupZone}</p>
+              <p className="font-medium">{result.pickupZone}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-            <MapPin className="w-4 h-4 text-pink-400" />
+          <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg border border-border">
+            <div className="w-6 h-6 rounded-full bg-pink-500/20 flex items-center justify-center">
+              <MapPin className="w-3 h-3 text-pink-400" />
+            </div>
             <div>
               <p className="text-muted-foreground text-xs">Dropoff</p>
-              <p>{result.dropoffZone}</p>
+              <p className="font-medium">{result.dropoffZone}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-            <Route className="w-4 h-4 text-muted-foreground" />
-            <div>
-              <p className="text-muted-foreground text-xs">Distance</p>
-              <p>{result.distance.toFixed(2)} miles</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg border border-border">
+              <Route className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <p className="text-muted-foreground text-xs">Distance</p>
+                <p className="font-medium">{result.distance.toFixed(2)} mi</p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-            <Clock className="w-4 h-4 text-muted-foreground" />
-            <div>
-              <p className="text-muted-foreground text-xs">Predicted at</p>
-              <p>{result.timestamp.toLocaleTimeString()}</p>
+            <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg border border-border">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <p className="text-muted-foreground text-xs">Time</p>
+                <p className="font-medium">{result.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+              </div>
             </div>
           </div>
         </div>

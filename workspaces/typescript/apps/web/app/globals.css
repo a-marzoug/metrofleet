@@ -1,13 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
-
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -41,93 +39,266 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-neon: var(--neon);
-  --color-neon-muted: var(--neon-muted);
 }
 
-.dark {
-  --radius: 0.625rem;
-  --background: #0a0f14;
-  --foreground: #e2e8f0;
-  --card: #0d1419;
-  --card-foreground: #e2e8f0;
-  --popover: #0d1419;
-  --popover-foreground: #e2e8f0;
+:root {
+  --background: #02040a;
+  --foreground: #f8fafc;
+
+  --card: #0b121e;
+  --card-foreground: #f8fafc;
+
+  --popover: #0b1121;
+  --popover-foreground: #f8fafc;
+
   --primary: #2dd4bf;
-  --primary-foreground: #042f2e;
-  --secondary: #1a2332;
-  --secondary-foreground: #e2e8f0;
-  --muted: #1a2332;
+  --primary-foreground: #02040a;
+
+  --secondary: #111827;
+  --secondary-foreground: #f8fafc;
+
+  --muted: #111827;
   --muted-foreground: #64748b;
-  --accent: #2dd4bf;
-  --accent-foreground: #042f2e;
-  --destructive: #f87171;
+
+  --accent: #a855f7;
+  --accent-foreground: #f8fafc;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+
   --border: #1e293b;
-  --input: #1a2332;
+  --input: #111827;
   --ring: #2dd4bf;
-  --neon: #2dd4bf;
-  --neon-muted: rgba(45, 212, 191, 0.15);
-  --chart-1: #2dd4bf;
-  --chart-2: #22d3ee;
-  --chart-3: #a78bfa;
-  --chart-4: #f472b6;
-  --chart-5: #fb923c;
-  --sidebar: #0d1419;
-  --sidebar-foreground: #e2e8f0;
-  --sidebar-primary: #2dd4bf;
-  --sidebar-primary-foreground: #042f2e;
-  --sidebar-accent: #1a2332;
-  --sidebar-accent-foreground: #e2e8f0;
-  --sidebar-border: #1e293b;
-  --sidebar-ring: #2dd4bf;
+
+  --radius: 0.75rem;
+
+  /* Custom tokens converted to hex for simplicity or kept if HSL needed globally, but provided CSS uses spaces which Tailwind 4 handles differently if using @theme. 
+       However, the user provided exact HSL values. I will stick to HSL if possible or convert to clear hex/rgb if standardizing.
+       The user provided a Tailwind 3-style config block (@layer base :root).
+       Since we are using Tailwind 4 (@import "tailwindcss"), we need to adapt slightly or ensure the variables are respected.
+       The user's CSS uses HSL space-separated values (e.g. 220 20% 6%).
+       I will inject these as CSS variables. 
+    */
+  --neon-glow: #2dd4bf;
+  --neon-accent: #a855f7;
+
+  /* Using HSL values as provided by user for exact match where possible, explicitly defining them */
+  --color-background-hsl: 220 20% 6%;
+  --color-primary-hsl: 174 72% 56%;
+}
+
+@layer base {
+  :root {
+    --background: hsl(220 20% 6%);
+    --foreground: hsl(210 40% 98%);
+
+    --card: hsl(220 20% 10%);
+    --card-foreground: hsl(210 40% 98%);
+
+    --popover: hsl(220 20% 8%);
+    --popover-foreground: hsl(210 40% 98%);
+
+    --primary: hsl(174 72% 56%);
+    --primary-foreground: hsl(220 20% 6%);
+
+    --secondary: hsl(220 20% 14%);
+    --secondary-foreground: hsl(210 40% 98%);
+
+    --muted: hsl(220 20% 16%);
+    --muted-foreground: hsl(215 20% 55%);
+
+    --accent: hsl(280 70% 60%);
+    --accent-foreground: hsl(210 40% 98%);
+
+    --destructive: hsl(0 72% 51%);
+    --destructive-foreground: hsl(210 40% 98%);
+
+    --border: hsl(220 20% 18%);
+    --input: hsl(220 20% 14%);
+    --ring: hsl(174 72% 56%);
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --neon-glow: hsl(174 72% 56%);
+    --neon-accent: hsl(280 70% 60%);
+
+    --sidebar-background: hsl(220 20% 8%);
+    --sidebar: hsl(220 20% 8%);
+    --sidebar-foreground: hsl(210 40% 98%);
+    --sidebar-primary: hsl(174 72% 56%);
+    --sidebar-primary-foreground: hsl(220 20% 6%);
+    --sidebar-accent: hsl(220 20% 14%);
+    --sidebar-accent-foreground: hsl(210 40% 98%);
+    --sidebar-border: hsl(220 20% 18%);
+    --sidebar-ring: hsl(174 72% 56%);
+  }
+
+  .dark {
+    --background: hsl(220 20% 6%);
+    --foreground: hsl(210 40% 98%);
+    --card: hsl(220 20% 10%);
+    --card-foreground: hsl(210 40% 98%);
+    --popover: hsl(220 20% 8%);
+    --popover-foreground: hsl(210 40% 98%);
+    --primary: hsl(174 72% 56%);
+    --primary-foreground: hsl(220 20% 6%);
+    --secondary: hsl(220 20% 14%);
+    --secondary-foreground: hsl(210 40% 98%);
+    --muted: hsl(220 20% 16%);
+    --muted-foreground: hsl(215 20% 55%);
+    --accent: hsl(280 70% 60%);
+    --accent-foreground: hsl(210 40% 98%);
+    --destructive: hsl(0 72% 51%);
+    --destructive-foreground: hsl(210 40% 98%);
+    --border: hsl(220 20% 18%);
+    --input: hsl(220 20% 14%);
+    --ring: hsl(174 72% 56%);
+  }
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 }
 
-/* Neon glow effects */
-.neon-text {
-  color: #2dd4bf;
-  text-shadow: 0 0 10px rgba(45, 212, 191, 0.5), 0 0 20px rgba(45, 212, 191, 0.3);
+@layer components {
+  .glass-panel {
+    @apply bg-card/60 backdrop-blur-xl border border-border/30 rounded-xl;
+  }
+
+  .neon-text {
+    @apply text-primary;
+    text-shadow: 0 0 10px hsl(var(--primary) / 0.5),
+      0 0 20px hsl(var(--primary) / 0.3),
+      0 0 40px hsl(var(--primary) / 0.2);
+  }
+
+  .neon-border {
+    @apply border-primary/50;
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.3),
+      inset 0 0 10px hsl(var(--primary) / 0.1);
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.4),
+      0 0 40px hsl(var(--primary) / 0.2),
+      0 0 60px hsl(var(--primary) / 0.1);
+  }
+
+  .neon-button {
+    @apply bg-primary text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.5)];
+    transition: all 0.3s ease;
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  }
+
+  .gradient-bg {
+    background: radial-gradient(ellipse at top, hsl(220 20% 12%) 0%, hsl(var(--background)) 70%);
+  }
+
+  .cyber-grid {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
 }
 
-.neon-border {
-  border-color: #2dd4bf;
-  box-shadow: 0 0 10px rgba(45, 212, 191, 0.3), inset 0 0 10px rgba(45, 212, 191, 0.1);
+@layer utilities {
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-scan {
+    animation: scan 3s linear infinite;
+  }
+
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      opacity: 1;
+      filter: brightness(1);
+    }
+
+    50% {
+      opacity: 0.8;
+      filter: brightness(1.2);
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes scan {
+    0% {
+      background-position: 0% 0%;
+    }
+
+    100% {
+      background-position: 0% 100%;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        hsl(var(--primary) / 0.1) 50%,
+        transparent 100%);
+    background-size: 200% 100%;
+  }
 }
 
-.neon-glow {
-  box-shadow: 0 0 20px rgba(45, 212, 191, 0.4), 0 0 40px rgba(45, 212, 191, 0.2);
-}
-
-.neon-button {
-  background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
-  box-shadow: 0 0 20px rgba(45, 212, 191, 0.5), 0 0 40px rgba(45, 212, 191, 0.3);
-  transition: all 0.3s ease;
-}
-
-.neon-button:hover {
-  box-shadow: 0 0 30px rgba(45, 212, 191, 0.7), 0 0 60px rgba(45, 212, 191, 0.4);
-}
-
-/* Leaflet dark theme overrides */
+/* Leaflet dark theme override */
 .leaflet-container {
-  background: #0a0f14;
+  background: hsl(220 20% 6%);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  z-index: 0;
 }
 
 .leaflet-control-zoom a {
-  background: #1a2332 !important;
-  color: #e2e8f0 !important;
-  border-color: #1e293b !important;
+  background: hsl(220 20% 14%) !important;
+  color: hsl(210 40% 98%) !important;
+  border-color: hsl(220 20% 18%) !important;
 }
 
 .leaflet-control-zoom a:hover {
-  background: #2dd4bf !important;
-  color: #042f2e !important;
+  background: hsl(174 72% 56%) !important;
+  color: hsl(220 20% 6%) !important;
 }

@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans antialiased h-screen overflow-hidden`}>
+      <body className={`${inter.variable} font-sans antialiased h-screen overflow-hidden cyber-grid`}>
         {children}
       </body>
     </html>

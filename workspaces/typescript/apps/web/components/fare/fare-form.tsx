@@ -33,7 +33,7 @@ export function FareForm({ pickup, dropoff, onPickupChange, onDropoffChange, dis
           <DollarSign className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <h2 className="font-semibold">Fare Prediction</h2>
+          <h2 className="font-semibold font-techno">Fare Prediction</h2>
           <p className="text-xs text-muted-foreground">ML-powered fare estimates</p>
         </div>
       </div>

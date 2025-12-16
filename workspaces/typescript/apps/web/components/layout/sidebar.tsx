@@ -28,7 +28,7 @@ export function Sidebar() {
             <RefreshCw className="w-5 h-5 text-primary" />
           </motion.div>
           <div>
-            <h1 className="font-bold text-lg tracking-wide neon-text">METROHAIL</h1>
+            <h1 className="font-bold text-lg tracking-wide neon-text font-techno">METROHAIL</h1>
             <p className="text-[10px] text-muted-foreground tracking-widest">NYC TLC ANALYTICS</p>
           </div>
         </Link>

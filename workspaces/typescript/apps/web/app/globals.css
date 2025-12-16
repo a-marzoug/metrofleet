@@ -217,6 +217,10 @@
 }
 
 @layer utilities {
+  .font-techno {
+    font-family: 'Orbitron', sans-serif;
+  }
+
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
   }

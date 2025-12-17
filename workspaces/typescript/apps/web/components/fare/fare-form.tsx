@@ -49,7 +49,7 @@ export function FareForm({ pickup, dropoff, onPickupChange, onDropoffChange, dis
           </div>
           <div>
             <label className="flex items-center gap-2 text-sm mb-2">
-              <MapPin className="w-4 h-4 text-pink-400" />
+              <MapPin className="w-4 h-4 text-violet-400" />
               Dropoff Location
             </label>
             <ZoneSelect value={dropoff} onValueChange={onDropoffChange} placeholder="Select dropoff" />

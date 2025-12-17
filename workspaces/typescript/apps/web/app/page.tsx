@@ -45,7 +45,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex bg-background">
+    <div className="h-screen flex">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />

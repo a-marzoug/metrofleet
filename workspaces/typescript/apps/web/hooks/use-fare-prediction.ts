@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { PredictionResult } from "@/lib/types";
 import { getZoneById } from "@/lib/zones";
+import { MetroFleetClient } from "@metrofleet/sdk";
 
 interface PredictParams {
   pickupLocationId: number;
@@ -19,14 +20,20 @@ export function useFarePrediction() {
     setError(null);
 
     try {
-      // TODO: Replace with actual SDK call
-      // const client = new MetroFleetClient();
-      // const result = await client.predictTrip({ ... });
+      const client = new MetroFleetClient();
 
-      await new Promise((r) => setTimeout(r, 600));
-      const baseFare = 3.0;
-      const perMile = 2.5;
-      const estimatedFare = baseFare + params.tripDistance * perMile + Math.random() * 3;
+      const result = await client.predictTrip({
+        pickupLocationId: params.pickupLocationId,
+        dropoffLocationId: params.dropoffLocationId,
+        tripDistance: params.tripDistance,
+        pickupDatetime: new Date().toISOString(),
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message || "Unknown API error");
+      }
+
+      const prediction = result.data;
 
       const pickup = getZoneById(params.pickupLocationId);
       const dropoff = getZoneById(params.dropoffLocationId);
@@ -35,7 +42,7 @@ export function useFarePrediction() {
         id: crypto.randomUUID(),
         pickupZone: pickup?.zone ?? "Unknown",
         dropoffZone: dropoff?.zone ?? "Unknown",
-        estimatedFare: Math.round(estimatedFare * 100) / 100,
+        estimatedFare: prediction.estimatedFare,
         distance: params.tripDistance,
         timestamp: new Date(),
       };

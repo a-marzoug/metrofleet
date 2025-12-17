@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type { PredictionResult } from "@/lib/types";
 import { getZoneById } from "@/lib/zones";
-import { MetroFleetClient } from "@metrofleet/sdk";
 
 interface PredictParams {
   pickupLocationId: number;
@@ -20,20 +19,23 @@ export function useFarePrediction() {
     setError(null);
 
     try {
-      const client = new MetroFleetClient();
-
-      const result = await client.predictTrip({
-        pickupLocationId: params.pickupLocationId,
-        dropoffLocationId: params.dropoffLocationId,
-        tripDistance: params.tripDistance,
-        pickupDatetime: new Date().toISOString(),
+      const response = await fetch("/api/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pickupLocationId: params.pickupLocationId,
+          dropoffLocationId: params.dropoffLocationId,
+          tripDistance: params.tripDistance,
+          pickupDatetime: new Date().toISOString(),
+        }),
       });
 
-      if (result.error) {
-        throw new Error(result.error.message || "Unknown API error");
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Prediction failed");
       }
 
-      const prediction = result.data;
+      const prediction = await response.json();
 
       const pickup = getZoneById(params.pickupLocationId);
       const dropoff = getZoneById(params.dropoffLocationId);

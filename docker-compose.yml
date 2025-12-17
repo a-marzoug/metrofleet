@@ -133,6 +133,7 @@ services:
     container_name: metrofleet_web
     environment:
       METROFLEET_API_URL: http://api:8000
+      METROFLEET_API_KEY: ${METROFLEET_API_KEY:-dev-secret-key}
     ports:
       - "3001:3000"
     depends_on:

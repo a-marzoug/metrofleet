@@ -39,8 +39,8 @@ export function FareResult({ result, open, onClose }: FareResultProps) {
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg border border-border">
-            <div className="w-6 h-6 rounded-full bg-pink-500/20 flex items-center justify-center">
-              <MapPin className="w-3 h-3 text-pink-400" />
+            <div className="w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center">
+              <MapPin className="w-3 h-3 text-violet-400" />
             </div>
             <div>
               <p className="text-muted-foreground text-xs">Dropoff</p>

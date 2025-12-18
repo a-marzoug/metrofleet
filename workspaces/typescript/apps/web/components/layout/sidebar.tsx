@@ -9,7 +9,7 @@ import { motion } from "motion/react";
 const navItems = [
   { href: "/live-map", icon: Map, label: "Live Map", subtitle: "Trip visualization", disabled: true },
   { href: "/", icon: DollarSign, label: "Fare Predict", subtitle: "Estimate fares" },
-  { href: "/history", icon: History, label: "Trip History", subtitle: "Past records", disabled: true },
+  { href: "/history", icon: History, label: "Trip History", subtitle: "Past records" },
   { href: "/analytics", icon: BarChart3, label: "Analytics", subtitle: "Coming soon", disabled: true },
 ];
 

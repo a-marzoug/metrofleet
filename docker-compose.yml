@@ -134,6 +134,7 @@ services:
     environment:
       METROFLEET_API_URL: http://api:8000
       METROFLEET_API_KEY: ${METROFLEET_API_KEY:-dev-secret-key}
+      METROHAIL_DB_URI: ${METROHAIL_DB_URI}
     ports:
       - "3001:3000"
     depends_on:

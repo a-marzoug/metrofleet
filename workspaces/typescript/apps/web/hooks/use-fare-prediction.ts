@@ -19,6 +19,9 @@ export function useFarePrediction() {
     setError(null);
 
     try {
+      const pickup = getZoneById(params.pickupLocationId);
+      const dropoff = getZoneById(params.dropoffLocationId);
+
       const response = await fetch("/api/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -27,6 +30,8 @@ export function useFarePrediction() {
           dropoffLocationId: params.dropoffLocationId,
           tripDistance: params.tripDistance,
           pickupDatetime: new Date().toISOString(),
+          pickupZone: pickup?.zone ?? `Zone ${params.pickupLocationId}`,
+          dropoffZone: dropoff?.zone ?? `Zone ${params.dropoffLocationId}`,
         }),
       });
 
@@ -36,9 +41,6 @@ export function useFarePrediction() {
       }
 
       const prediction = await response.json();
-
-      const pickup = getZoneById(params.pickupLocationId);
-      const dropoff = getZoneById(params.dropoffLocationId);
 
       return {
         id: crypto.randomUUID(),

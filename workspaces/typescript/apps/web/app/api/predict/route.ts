@@ -1,5 +1,6 @@
 import { MetroFleetClient } from "@metrofleet/sdk";
 import { NextResponse } from "next/server";
+import { createTrip } from "@/app/actions/trips";
 
 export async function POST(request: Request) {
     try {
@@ -20,6 +21,14 @@ export async function POST(request: Request) {
         if (result.error) {
             return NextResponse.json({ error: result.error.message }, { status: 500 });
         }
+
+        // Save trip to database
+        await createTrip({
+            pickupZone: body.pickupZone || `Zone ${body.pickupLocationId}`,
+            dropoffZone: body.dropoffZone || `Zone ${body.dropoffLocationId}`,
+            distance: body.tripDistance,
+            estimatedFare: result.data.estimatedFare,
+        });
 
         return NextResponse.json(result.data);
     } catch (error) {

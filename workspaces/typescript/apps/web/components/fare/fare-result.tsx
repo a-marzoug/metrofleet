@@ -10,7 +10,7 @@ interface FareResultProps {
   onClose: () => void;
 }
 
-export function FareResult({ result, open, onClose }: FareResultProps) {
+export const FareResult = ({ result, open, onClose }: FareResultProps) => {
   if (!result) return null;
 
   return (
@@ -59,7 +59,7 @@ export function FareResult({ result, open, onClose }: FareResultProps) {
               <Clock className="w-4 h-4 text-muted-foreground" />
               <div>
                 <p className="text-muted-foreground text-xs">Time</p>
-                <p className="font-medium">{result.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                <p className="font-medium">{result.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
               </div>
             </div>
           </div>
@@ -67,4 +67,4 @@ export function FareResult({ result, open, onClose }: FareResultProps) {
       </DialogContent>
     </Dialog>
   );
-}
+};

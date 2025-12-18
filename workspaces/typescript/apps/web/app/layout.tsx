@@ -12,16 +12,12 @@ export const metadata: Metadata = {
   description: "Get accurate fare estimates using our machine learning model",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans antialiased h-screen overflow-hidden cyber-grid`}>
-        {children}
-      </body>
-    </html>
-  );
-}
+const RootLayout = ({ children }: { children: React.ReactNode }) => (
+  <html lang="en" className="dark">
+    <body className={`${inter.variable} font-sans antialiased h-screen overflow-hidden cyber-grid`}>
+      {children}
+    </body>
+  </html>
+);
+
+export default RootLayout;

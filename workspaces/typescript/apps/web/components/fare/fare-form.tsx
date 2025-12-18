@@ -1,7 +1,7 @@
 "use client";
 
 import { DollarSign, MapPin, Clock, Route, Thermometer, CloudRain, Zap } from "lucide-react";
-import { ZoneSelect } from "./zone-select";
+import { ZoneSelect } from "@/components/fare/zone-select";
 import { Input } from "@/components/ui/input";
 import { motion } from "motion/react";
 
@@ -15,7 +15,7 @@ interface FareFormProps {
   loading: boolean;
 }
 
-export function FareForm({ pickup, dropoff, onPickupChange, onDropoffChange, distance, onSubmit, loading }: FareFormProps) {
+export const FareForm = ({ pickup, dropoff, onPickupChange, onDropoffChange, distance, onSubmit, loading }: FareFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit();
@@ -124,4 +124,4 @@ export function FareForm({ pickup, dropoff, onPickupChange, onDropoffChange, dis
       </form>
     </motion.div>
   );
-}
+};

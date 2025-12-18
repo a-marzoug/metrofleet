@@ -10,7 +10,7 @@ interface PredictParams {
   tripDistance: number;
 }
 
-export function useFarePrediction() {
+export const useFarePrediction = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,4 +59,4 @@ export function useFarePrediction() {
   };
 
   return { predict, loading, error };
-}
+};

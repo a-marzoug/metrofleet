@@ -13,7 +13,7 @@ const navItems = [
   { href: "/analytics", icon: BarChart3, label: "Analytics", subtitle: "Coming soon", disabled: true },
 ];
 
-export function Sidebar() {
+export const Sidebar = () => {
   const pathname = usePathname();
 
   return (
@@ -76,4 +76,4 @@ export function Sidebar() {
       </div>
     </aside>
   );
-}
+};

@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { DollarSign, MapPin, Clock, Route, Thermometer, CloudRain, Zap } from "lucide-react";
-import { ZoneSelect } from "@/components/fare/zone-select";
+import { ZoneSelect } from "./zone-select";
 import { Input } from "@/components/ui/input";
+import { DateTimePicker } from "@/components/ui/datetimepicker";
 import { motion } from "motion/react";
 
 interface FareFormProps {
@@ -16,6 +18,8 @@ interface FareFormProps {
 }
 
 export const FareForm = ({ pickup, dropoff, onPickupChange, onDropoffChange, distance, onSubmit, loading }: FareFormProps) => {
+  const [pickupDateTime, setPickupDateTime] = useState<Date | undefined>(new Date());
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit();
@@ -62,11 +66,7 @@ export const FareForm = ({ pickup, dropoff, onPickupChange, onDropoffChange, dis
               <Clock className="w-4 h-4 text-muted-foreground" />
               Pickup Date & Time
             </label>
-            <Input
-              type="datetime-local"
-              defaultValue={new Date().toISOString().slice(0, 16)}
-              className="bg-secondary border-border h-11"
-            />
+            <DateTimePicker value={pickupDateTime} onChange={setPickupDateTime} className="bg-secondary border-border h-11" />
           </div>
           <div>
             <label className="flex items-center gap-2 text-sm mb-2">

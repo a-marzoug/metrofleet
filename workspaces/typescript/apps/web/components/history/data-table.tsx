@@ -12,9 +12,13 @@ import {
   SortingState,
   VisibilityState,
 } from "@tanstack/react-table";
-import { Search, ChevronLeft, ChevronRight, Download, Columns, CalendarIcon, X } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Download, Columns, X, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +26,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import type { Trip } from "./columns";
 
 interface DataTableProps<TData, TValue> {
@@ -56,18 +61,18 @@ export const DataTable = <TData extends Trip, TValue>({ columns, data }: DataTab
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   const filteredData = useMemo(() => {
-    if (!dateFrom) return data;
+    if (!dateRange?.from) return data;
     return data.filter((trip) => {
       const date = new Date(trip.createdAt);
-      const from = new Date(dateFrom);
-      const to = dateTo ? new Date(dateTo + "T23:59:59") : new Date();
+      const from = dateRange.from!;
+      const to = dateRange.to ?? new Date();
+      to.setHours(23, 59, 59, 999);
       return date >= from && date <= to;
     });
-  }, [data, dateFrom, dateTo]);
+  }, [data, dateRange]);
 
   const table = useReactTable({
     data: filteredData as TData[],
@@ -98,12 +103,27 @@ export const DataTable = <TData extends Trip, TValue>({ columns, data }: DataTab
           </div>
 
           <div className="flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-            <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="bg-secondary border-border w-36" />
-            <span className="text-muted-foreground">to</span>
-            <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="bg-secondary border-border w-36" />
-            {(dateFrom || dateTo) && (
-              <Button variant="ghost" size="icon" onClick={() => { setDateFrom(""); setDateTo(""); }} className="h-8 w-8">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("justify-start text-left font-normal border-border", !dateRange && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateRange?.from ? (
+                    dateRange.to ? (
+                      <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
+                    ) : (
+                      format(dateRange.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>Filter by date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-card border-border" align="start">
+                <Calendar mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
+              </PopoverContent>
+            </Popover>
+            {dateRange && (
+              <Button variant="ghost" size="icon" onClick={() => setDateRange(undefined)} className="h-8 w-8">
                 <X className="w-4 h-4" />
               </Button>
             )}

@@ -18,15 +18,16 @@
 - [x] **MLOps:** MLflow 3.x for Experiment Tracking.
 - [x] **Automation:** Dagster pipeline to retrain model on new data.
 
-## Phase 3: The Consumer App (🚧 In Progress)
+## Phase 3: The Consumer App (✅ Completed)
 
 **Goal:** Allow users to get quotes via an API and Web App.
 
 - [x] **Backend:** FastAPI Microservice to serve `.pkl` model.
 - [x] **Contract:** Open API (Swagger) definition.
-- [ ] **SDK:** TypeScript Client Library for type-safe API communication.
-- [ ] **Frontend:** Next.js + Tailwind React App (Metrohail).
-- [ ] **Integration:** Connect Form UI to SDK.
+- [x] **SDK:** TypeScript Client Library (`@metrofleet/sdk`).
+- [x] **Frontend:** Next.js + Tailwind React App (Metrohail).
+- [x] **Visualization:** Interactive Map using Leaflet/OpenStreetMap.
+- [x] **Integration:** Full end-to-end flow (UI -> SDK -> API -> Model).
 
 ## Phase 4: Fleet Optimization (Planned)
 

@@ -35,9 +35,9 @@
 
 **2. The Solution**
 
-* **Technical Deliverable:** A Machine Learning Regression Model (XGBoost) API.
+* **Technical Deliverable:** A Machine Learning API and a **Consumer Web Application**.
 * **Feature Engineering:** The model is enriched with **Meteorological Data** (Rain/Snow impact) and **Calendar Events** (Holiday demand patterns) to improve accuracy during edge cases (e.g., blizzards or Christmas).
-* **User Story:** "As a Passenger, I want an accurate quote even during bad weather, so I don't get sticker shock."
+* **User Story:** "As a Passenger, I want to visually select my route on a map and get an instant quote."
 
 **3. Success Metrics**
 
@@ -45,6 +45,6 @@
 
 **4. Implementation Phase**
 
-* **Status:** 🚧 In Progress (Integration)
-* **Artifacts:** `price_model.pkl`, FastAPI Gateway.
-* **Pending:** TypeScript SDK & UI Integration.
+* **Status:** ✅ Completed
+* **Artifacts:** MetroHail Web App (`metrohail`), TypeScript SDK, Pricing API.
+* **Outcome:** Passengers can now receive guaranteed price quotes before booking.

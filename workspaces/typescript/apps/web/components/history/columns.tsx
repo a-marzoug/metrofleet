@@ -23,6 +23,7 @@ export const createColumns = (onDelete: (id: string) => void): ColumnDef<Trip>[]
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
+    meta: { label: "Pickup" },
   },
   {
     accessorKey: "dropoffZone",
@@ -33,6 +34,7 @@ export const createColumns = (onDelete: (id: string) => void): ColumnDef<Trip>[]
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
+    meta: { label: "Dropoff" },
   },
   {
     accessorKey: "distance",
@@ -44,6 +46,7 @@ export const createColumns = (onDelete: (id: string) => void): ColumnDef<Trip>[]
       </Button>
     ),
     cell: ({ row }) => `${row.original.distance.toFixed(2)} mi`,
+    meta: { label: "Distance" },
   },
   {
     accessorKey: "estimatedFare",
@@ -55,6 +58,7 @@ export const createColumns = (onDelete: (id: string) => void): ColumnDef<Trip>[]
       </Button>
     ),
     cell: ({ row }) => <span className="font-medium text-primary">${row.original.estimatedFare.toFixed(2)}</span>,
+    meta: { label: "Fare" },
   },
   {
     accessorKey: "createdAt",
@@ -66,16 +70,25 @@ export const createColumns = (onDelete: (id: string) => void): ColumnDef<Trip>[]
       </Button>
     ),
     cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+    filterFn: (row, _, filterValue) => {
+      if (!filterValue?.from) return true;
+      const date = new Date(row.original.createdAt);
+      const from = new Date(filterValue.from);
+      const to = filterValue.to ? new Date(filterValue.to) : new Date();
+      return date >= from && date <= to;
+    },
+    meta: { label: "Date" },
   },
   {
     id: "actions",
+    enableHiding: false,
     header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => (
       <Button
         variant="ghost"
         size="icon"
         onClick={() => onDelete(row.original.id)}
-        className="text-muted-foreground hover:text-violet-400 hover:bg-violet-500/10"
+        className="text-muted-foreground hover:text-white hover:bg-violet-500/10"
       >
         <Trash2 className="w-4 h-4" />
       </Button>

@@ -18,32 +18,36 @@ export const DataTable = ({ data }: DataTableProps) => {
   };
 
   const formatValue = (value: unknown): string => {
-    if (value === null || value === undefined) return "-";
+    if (value === null || value === undefined) return "—";
     if (typeof value === "boolean") return value ? "Yes" : "No";
-    if (typeof value === "number") return value.toLocaleString();
+    if (typeof value === "number") {
+      return Number.isInteger(value)
+        ? value.toLocaleString()
+        : value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    }
     return String(value);
   };
 
   return (
-    <div className="overflow-x-auto my-4 rounded-md border">
-      <table className="w-full text-sm text-left">
-        <thead className="bg-zinc-100 text-zinc-700 uppercase">
-          <tr>
+    <div className="overflow-x-auto rounded-lg border border-zinc-200 my-3">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="bg-zinc-50 border-b border-zinc-200">
             {headers.map((h) => (
-              <th key={h} className="px-4 py-2">
-                {h}
+              <th
+                key={h}
+                className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider"
+              >
+                {h.replace(/_/g, " ")}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-zinc-100">
           {data.map((row, i) => (
-            <tr
-              key={getRowKey(row, i)}
-              className="border-b last:border-0 hover:bg-zinc-50"
-            >
+            <tr key={getRowKey(row, i)} className="hover:bg-zinc-50">
               {headers.map((h) => (
-                <td key={h} className="px-4 py-2">
+                <td key={h} className="px-4 py-2.5 text-zinc-700">
                   {formatValue(row[h as keyof typeof row])}
                 </td>
               ))}

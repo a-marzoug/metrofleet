@@ -21,7 +21,7 @@
 **4. Implementation Phase**
 
 * **Status:** ✅ Completed
-* **Artifacts:** `dm_daily_revenue` table, Streamlit Admin Dashboard.
+* **Artifacts:** `dm_daily_revenue` table, Streamlit Admin Dashboard, **MetroAnalyst (apps/analyst)** — a conversational analytics interface for ad-hoc queries.
 
 ---
 
@@ -48,3 +48,26 @@
 * **Status:** ✅ Completed
 * **Artifacts:** MetroHail Web App (`metrohail`), TypeScript SDK, Pricing API.
 * **Outcome:** Passengers can now receive guaranteed price quotes before booking.
+
+---
+
+## **Case 003: Conversational Analytics & Rapid Insight**
+
+**1. The Situation**
+
+* **Context:** Operators and analysts need a faster way to ask ad-hoc, granular questions (e.g., "Which days in July had higher revenue in Queens when it rained?").
+* **Pain Point:** Building SQL ad-hoc queries requires domain knowledge; waits for analysts increase time-to-insight.
+
+**2. The Solution**
+
+* **Technical Deliverable:** **MetroAnalyst**, a chat-driven interface that translates natural-language questions into read-only SQL, executes them against the warehouse, and returns results as tables and short summaries.
+* **User Story:** "As an Operations Analyst, I want to ask natural language questions about revenue and trip patterns and receive immediate, verifiable results."
+
+**3. Success Metrics**
+
+* **Business KPI:** Reduce ad-hoc query turnaround from 2 hours to < 15 minutes for non-technical stakeholders.
+* **Adoption KPI:** 60% of Ops team conducts at least one MetroAnalyst query per week within the quarter.
+
+**4. Implementation Phase**
+
+* **Status:** ✅ Prototype (Dev Server), artifact: `apps/analyst`.

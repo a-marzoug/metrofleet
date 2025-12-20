@@ -28,6 +28,8 @@ The central fact table for trip analysis and model training. Joined with Weather
 | `is_holiday` | Boolean | `True` if pickup date is a US/NY Public Holiday. | **Holidays Lib** |
 | `holiday_name` | String | Name of the holiday (e.g., "Christmas Day") or "Non-Holiday". | **Holidays Lib** |
 
+> Note: These tables are used by **MetroAnalyst** (`apps/analyst`) for conversational queries. MetroAnalyst relies on `fct_trips` (columns: `pickup_datetime`, `total_amount`, `trip_distance`, `precip_mm`, `temp_c`, `is_holiday`, `holiday_name`) and `dm_daily_revenue` for aggregate summaries and quick dashboards.
+
 ## Raw Data (Sources)
 
 ### `raw_yellow_trips`

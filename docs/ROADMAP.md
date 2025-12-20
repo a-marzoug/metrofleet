@@ -29,6 +29,15 @@
 - [x] **Visualization:** Interactive Map using Leaflet/OpenStreetMap.
 - [x] **Integration:** Full end-to-end flow (UI -> SDK -> API -> Model).
 
+## Phase 3.5: AI Analyst (✅ Completed)
+
+**Goal:** Enable conversational analytics for non-technical users.
+
+- [x] **UI:** Chat Interface (Next.js + Vercel AI SDK).
+- [x] **Intelligence:** Google Gemini integration for natural language understanding.
+- [x] **Tooling:** Read-only SQL tool for safe database querying.
+- [x] **Safety:** Query validation and row limits.
+
 ## Phase 4: Fleet Optimization (Planned)
 
 **Goal:** Reduce driver idle time.

@@ -14,41 +14,63 @@ import type { ToolOutput } from "@/types/database";
 type ToolPart = {
   type: `tool-${string}`;
   toolCallId: string;
-  toolName: string;
-  state: "partial-call" | "call" | "result";
-  args?: { query?: string };
-  result?: ToolOutput;
+  state:
+    | "input-streaming"
+    | "input-available"
+    | "output-available"
+    | "output-error";
+  input?: { query?: string };
+  output?: ToolOutput;
+  errorText?: string;
 };
 
 const ToolResult = ({ part }: { part: ToolPart }) => {
-  const query = part.args?.query;
+  const query = part.input?.query;
 
-  if (part.state !== "result" || !part.result) {
+  // Still loading
+  if (part.state === "input-streaming" || part.state === "input-available") {
     return (
       <div className="flex items-center gap-2 text-sm text-zinc-400 py-2">
         <Database size={14} className="animate-pulse" />
         <span>Querying database...</span>
+        {query && <SqlBlock query={query} />}
       </div>
     );
   }
 
-  if ("error" in part.result) {
+  // Error state
+  if (part.state === "output-error") {
     return (
-      <div className="text-sm text-red-500 py-2">
-        Error: {part.result.error}
+      <div className="py-2">
+        {query && <SqlBlock query={query} />}
+        <div className="text-sm text-red-500">Error: {part.errorText}</div>
       </div>
     );
   }
 
-  return (
-    <div className="py-2">
-      {query && <SqlBlock query={query} />}
-      <DataTable data={part.result.data} />
-      {part.result.note && (
-        <div className="text-xs text-zinc-400 mt-2">{part.result.note}</div>
-      )}
-    </div>
-  );
+  // Output available
+  if (part.state === "output-available" && part.output) {
+    if ("error" in part.output) {
+      return (
+        <div className="py-2">
+          {query && <SqlBlock query={query} />}
+          <div className="text-sm text-red-500">Error: {part.output.error}</div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="py-2">
+        {query && <SqlBlock query={query} />}
+        <DataTable data={part.output.data} />
+        {part.output.note && (
+          <div className="text-xs text-zinc-400 mt-2">{part.output.note}</div>
+        )}
+      </div>
+    );
+  }
+
+  return null;
 };
 
 const MessageContent = ({
@@ -115,7 +137,6 @@ const AnalystChat = () => {
   });
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const isStreaming = status === "streaming" || status === "submitted";
 
@@ -178,7 +199,6 @@ const AnalystChat = () => {
         >
           <div className="w-full relative flex items-center bg-zinc-100 rounded-3xl border border-zinc-200 focus-within:border-zinc-300 transition-colors">
             <textarea
-              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

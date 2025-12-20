@@ -7,38 +7,89 @@ type SqlBlockProps = {
   query: string;
 };
 
-const SQL_KEYWORDS =
-  /\b(SELECT|FROM|WHERE|AND|OR|ORDER BY|GROUP BY|HAVING|LIMIT|OFFSET|JOIN|LEFT|RIGHT|INNER|OUTER|ON|AS|DISTINCT|COUNT|SUM|AVG|MIN|MAX|CASE|WHEN|THEN|ELSE|END|IN|NOT|NULL|IS|LIKE|BETWEEN|UNION|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|TABLE|INDEX|VIEW|WITH|ASC|DESC)\b/gi;
+const SQL_KEYWORDS = new Set([
+  "SELECT",
+  "FROM",
+  "WHERE",
+  "AND",
+  "OR",
+  "ORDER",
+  "BY",
+  "GROUP",
+  "HAVING",
+  "LIMIT",
+  "OFFSET",
+  "JOIN",
+  "LEFT",
+  "RIGHT",
+  "INNER",
+  "OUTER",
+  "ON",
+  "AS",
+  "DISTINCT",
+  "COUNT",
+  "SUM",
+  "AVG",
+  "MIN",
+  "MAX",
+  "CASE",
+  "WHEN",
+  "THEN",
+  "ELSE",
+  "END",
+  "IN",
+  "NOT",
+  "NULL",
+  "IS",
+  "LIKE",
+  "BETWEEN",
+  "UNION",
+  "INSERT",
+  "UPDATE",
+  "DELETE",
+  "CREATE",
+  "DROP",
+  "ALTER",
+  "TABLE",
+  "INDEX",
+  "VIEW",
+  "WITH",
+  "ASC",
+  "DESC",
+  "OVER",
+  "PARTITION",
+  "ROUND",
+  "COALESCE",
+]);
 
 const highlightSql = (sql: string): React.ReactNode[] => {
-  const parts = sql.split(SQL_KEYWORDS);
-  const matches = sql.match(SQL_KEYWORDS) || [];
+  const tokens = sql.split(/(\s+|[(),;])/);
 
-  const result: React.ReactNode[] = [];
-  let matchIndex = 0;
-  let keyCounter = 0;
-
-  for (const part of parts) {
-    if (part) {
-      result.push(
-        <span key={`p-${keyCounter++}-${part.slice(0, 10)}`}>{part}</span>,
+  return tokens.map((token, i) => {
+    const upper = token.toUpperCase();
+    if (SQL_KEYWORDS.has(upper)) {
+      return (
+        <span key={i} className="text-sky-400 font-medium">
+          {token}
+        </span>
       );
     }
-    if (matchIndex < matches.length) {
-      const keyword = matches[matchIndex];
-      result.push(
-        <span
-          key={`k-${keyCounter++}-${keyword}`}
-          className="text-blue-600 font-medium"
-        >
-          {keyword}
-        </span>,
+    if (/^'.*'$/.test(token)) {
+      return (
+        <span key={i} className="text-amber-300">
+          {token}
+        </span>
       );
-      matchIndex++;
     }
-  }
-
-  return result;
+    if (/^\d+(\.\d+)?$/.test(token)) {
+      return (
+        <span key={i} className="text-purple-400">
+          {token}
+        </span>
+      );
+    }
+    return <span key={i}>{token}</span>;
+  });
 };
 
 export const SqlBlock = ({ query }: SqlBlockProps) => {

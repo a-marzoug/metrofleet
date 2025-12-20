@@ -140,5 +140,24 @@ services:
     depends_on:
       - api
 
+  analyst:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.analyst
+    container_name: metrofleet_analyst
+    environment:
+      # Point the analyst app to the same warehouse used by other services
+      POSTGRES_HOST: warehouse
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # AI provider credentials (do not commit secrets)
+      GOOGLE_GENERATIVE_AI_API_KEY: ${GOOGLE_GENERATIVE_AI_API_KEY}
+      # Optional: other provider-specific vars (e.g., GOOGLE_PROJECT_ID)
+    ports:
+      - "3002:3000"
+    depends_on:
+      - warehouse
+
 volumes:
   pg_data:

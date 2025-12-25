@@ -32,6 +32,7 @@ dependencies = [
     "networkx>=3.6",
     "httpx>=0.28.1",
     "holidays>=0.86",
+    "prophet>=1.2.1",
 ]
 
 [tool.uv.workspace]

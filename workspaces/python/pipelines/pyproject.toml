@@ -24,4 +24,5 @@ dependencies = [
     "sqlalchemy>=2.0.44",
     "httpx>=0.28.1",
     "holidays>=0.86",
+    "prophet>=1.2.1",
 ]

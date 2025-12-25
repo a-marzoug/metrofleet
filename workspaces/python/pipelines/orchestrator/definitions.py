@@ -3,7 +3,7 @@ import os
 from dagster import Definitions, EnvVar, load_assets_from_modules
 from dagster_dbt import DbtCliResource
 
-from .assets import dbt, holidays, ingestion, training, weather
+from .assets import dbt, forcasting, holidays, ingestion, training, weather
 from .resources.database import PostgresResource
 
 # Load assets
@@ -12,6 +12,7 @@ dbt_assets = load_assets_from_modules([dbt], group_name='transformation')
 training_assets = load_assets_from_modules([training])
 holidays_assets = load_assets_from_modules([holidays])
 weather_assets = load_assets_from_modules([weather])
+forcasting_assets = load_assets_from_modules([forcasting])
 
 # Define the connection using Environment Variables
 # EnvVar("VAR_NAME") tells Dagster to look for this in the system environment
@@ -31,6 +32,7 @@ defs = Definitions(
         *training_assets,
         *holidays_assets,
         *weather_assets,
+        *forcasting_assets,
     ],
     resources={
         'database': database_resource,

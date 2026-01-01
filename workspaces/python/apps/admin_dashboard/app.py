@@ -8,6 +8,7 @@ from src.components.charts import (
     create_trip_volume_chart,
 )
 from src.components.data_table import render_data_table
+from src.components.forecasting import render_forecast_section
 from src.components.header import render_header
 from src.components.metrics import display_kpi_metrics
 from src.components.sidebar import render_sidebar
@@ -18,7 +19,7 @@ from src.utils.data_processing import (
     calculate_metrics,
     filter_by_time_period,
 )
-from src.utils.database import load_revenue_data
+from src.utils.database import load_forecast_data, load_revenue_data
 
 # Page Configuration
 st.set_page_config(
@@ -96,6 +97,17 @@ else:
     with col2:
         fig_bar = create_revenue_by_borough_chart(df_borough)
         st.plotly_chart(fig_bar, use_container_width=True)
+
+    st.markdown('---')
+
+    # Demand Forecasting Section
+    st.markdown(
+        '<div class="section-header">🔮 Demand Forecasting</div>',
+        unsafe_allow_html=True,
+    )
+
+    df_forecast = load_forecast_data()
+    render_forecast_section(df_forecast)
 
     st.markdown('---')
 

@@ -22,3 +22,35 @@ def load_revenue_data():
         return pd.read_sql(query, engine)
     except Exception:
         return pd.DataFrame()
+
+
+@st.cache_data(ttl=DASHBOARD_CONFIG['cache_ttl'])
+def load_forecast_data():
+    """Load demand forecast data from data warehouse.
+
+    Returns forecasts for timestamps greater than the latest historical data.
+    """
+    engine = get_db_connection()
+    query = """
+    WITH latest_historical AS (
+        SELECT MAX(forecast_timestamp) as max_ts
+        FROM demand_forecasts
+        WHERE predicted_demand IS NOT NULL
+    )
+    SELECT 
+        forecast_timestamp,
+        predicted_demand,
+        conf_lower,
+        conf_upper,
+        pickup_borough
+    FROM demand_forecasts, latest_historical
+    WHERE forecast_timestamp > (
+        SELECT MAX(forecast_timestamp) - INTERVAL '7 days'
+        FROM demand_forecasts
+    )
+    ORDER BY pickup_borough, forecast_timestamp
+    """
+    try:
+        return pd.read_sql(query, engine)
+    except Exception:
+        return pd.DataFrame()

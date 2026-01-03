@@ -1,4 +1,8 @@
-# 🚖 Metrofleet
+<p align="center">
+  <img src="assets/logo.svg" alt="Metrofleet Logo" width="200">
+</p>
+
+<h1 align="center">Metrofleet</h1>
 
 **A modern data platform for taxi fleet operations, fare prediction, and conversational analytics.**
 

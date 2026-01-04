@@ -1,7 +1,13 @@
 import polars as pl
 from sklearn.model_selection import train_test_split
 
-from .config import DATA_QUERY, DB_URI, TARGET_COLUMN
+from .config import (
+    ANOMALY_DATA_QUERY,
+    ANOMALY_NUMERICAL_FEATURES,
+    DATA_QUERY,
+    DB_URI,
+    TARGET_COLUMN,
+)
 
 
 def load_data():
@@ -27,6 +33,13 @@ def load_data():
     return df
 
 
+def load_anomaly_data():
+    """Load data for anomaly detection."""
+    print('Loading recent data for Anomaly Baseline...')
+    df = pl.read_database_uri(query=ANOMALY_DATA_QUERY, uri=DB_URI, engine='connectorx')
+    return df
+
+
 def prepare_features(df):
     """Split features and target, then train/test split."""
     feature_cols = [
@@ -44,3 +57,8 @@ def prepare_features(df):
     y = df.select(TARGET_COLUMN).to_pandas()[TARGET_COLUMN]
 
     return train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+def prepare_anomaly_features(df):
+    """Select features for anomaly detection (no split needed)."""
+    return df.select(ANOMALY_NUMERICAL_FEATURES).to_pandas()

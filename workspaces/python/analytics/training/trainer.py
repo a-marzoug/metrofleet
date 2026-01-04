@@ -4,8 +4,19 @@ import pickle
 import mlflow
 from sklearn.metrics import mean_absolute_error
 
-from .config import EXPERIMENT_NAME, MLFLOW_TRACKING_URI, PROD_MODEL_PATH
-from .data_loader import load_data, prepare_features
+from .config import (
+    ANOMALY_EXPERIMENT_NAME,
+    ANOMALY_MODEL_PATH,
+    EXPERIMENT_NAME,
+    MLFLOW_TRACKING_URI,
+    PROD_MODEL_PATH,
+)
+from .data_loader import (
+    load_anomaly_data,
+    load_data,
+    prepare_anomaly_features,
+    prepare_features,
+)
 from .models import create_pipeline
 
 
@@ -41,10 +52,33 @@ class ModelTrainer:
 
             return pipeline, mae
 
-    def _save_production_model(self, pipeline):
+    def train_anomaly(self, **model_params):
+        """Train anomaly detection model."""
+        mlflow.set_experiment(ANOMALY_EXPERIMENT_NAME)
+
+        with mlflow.start_run():
+            # Load and prepare data
+            df = load_anomaly_data()
+            X = prepare_anomaly_features(df)
+
+            # Create and train pipeline
+            pipeline = create_pipeline('isolation_forest', **model_params)
+            print('Training Isolation Forest model...')
+            pipeline.fit(X)
+
+            # Log results
+            mlflow.log_params(model_params)
+            mlflow.sklearn.log_model(pipeline, name='anomaly_model')
+
+            # Save production model
+            self._save_production_model(pipeline, ANOMALY_MODEL_PATH)
+
+            return pipeline
+
+    def _save_production_model(self, pipeline, path=PROD_MODEL_PATH):
         """Save model for production use."""
-        prod_dir = os.path.dirname(PROD_MODEL_PATH)
+        prod_dir = os.path.dirname(path)
         os.makedirs(prod_dir, exist_ok=True)
-        with open(PROD_MODEL_PATH, 'wb') as f:
+        with open(path, 'wb') as f:
             pickle.dump(pipeline, f)
-        print(f'💾 Production model saved to {PROD_MODEL_PATH}')
+        print(f'💾 Production model saved to {path}')

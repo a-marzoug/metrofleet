@@ -58,14 +58,22 @@ The "Metrofleet" company and its business problems are **entirely fictional**. T
 
 ## Overview
 
-Metrofleet is a full-stack data platform that transforms taxi fleet operations through:
+MetroFleet is a full-stack, AI-powered platform for modernizing NYC Taxi operations.
 
-- **📊 Real-time Analytics** — Daily revenue dashboards replacing 30-day reporting lag
-- **💰 Guaranteed Pricing** — ML-powered fare predictions with weather/holiday enrichment
-- **💬 AI Analyst** — Natural language queries against your data warehouse
-- **📈 Demand Forecasting** — Time-series predictions for fleet optimization
+### 🚀 Key Features
 
----
+1. **Smart Pricing:** Machine Learning (XGBoost) fare estimation enriched with Live Weather & Holiday data.
+2. **Fleet Intelligence:** Hourly demand forecasting (Prophet) to optimize driver positioning.
+3. **Consumer App:** A Next.js 15 Web App with interactive maps and instant quotes.
+4. **AI Analyst:** A Generative UI Chatbot that lets Ops ask questions like *"Show me revenue trends for rainy days."*
+5. **Robust Data Ops:** Automated Rust/Python pipelines managed by Dagster & dbt.
+
+### 🛠 Tech Stack
+
+- **Data Engineering:** Rust (CLI), Python (Polars), Dagster, dbt, Postgres.
+- **Data Science:** XGBoost, Prophet, Isolation Forest, MLflow 3.
+- **Application:** Next.js 15 (App Router), Tailwind, Shadcn UI, FastAPI.
+- **AI:** Vercel AI SDK, Google Gemini 1.5 Flash.
 
 ## Quick Start
 
@@ -81,121 +89,17 @@ docker-compose up -d --build
 make infra-up
 ```
 
-**Access the services:**
-
-| Service | URL | Description |
-|---------|-----|-------------|
-| 🎯 Dagster | <http://localhost:3000> | Data pipeline orchestration |
-| 📊 Dashboard | <http://localhost:8501> | Admin analytics (Streamlit) |
-| 🚕 MetroHail | <http://localhost:3001> | Consumer fare prediction app |
-| 💬 MetroAnalyst | <http://localhost:3002> | AI-powered analytics chat |
-| 🔮 Prediction API | <http://localhost:8000/docs> | ML model endpoint (Swagger) |
-| 🧪 MLflow | <http://localhost:5000> | Experiment tracking |
-| 📓 JupyterLab | <http://localhost:8888> | Data science notebooks |
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         METROFLEET PLATFORM                         │
-├─────────────────────────────────────────────────────────────────────┤
-│  INGESTION          WAREHOUSE           ML                APPS      │
-│  ┌─────────┐        ┌─────────┐        ┌─────────┐      ┌─────────┐ │
-│  │Rust CLI │───────▶│Postgres │───────▶│XGBoost  │─────▶│MetroHail│ │
-│  │(TLC)    │        │  +dbt   │        │+Prophet │      │   App   │ │
-│  └─────────┘        └─────────┘        └─────────┘      └─────────┘ │
-│  ┌─────────┐              │                             ┌─────────┐ │
-│  │Weather  │──────────────┘                             │Analyst  │ │
-│  │+Holidays│                                            │  Chat   │ │
-│  └─────────┘                                            └─────────┘ │
-├─────────────────────────────────────────────────────────────────────┤
-│  Dagster (Orchestration) │ MLflow (Experiments) │ Docker (Infra)    │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Project Structure
-
-```
-metrofleet/
-├── workspaces/
-│   ├── python/                 # Data engineering & ML
-│   │   ├── pipelines/          # Dagster assets + dbt
-│   │   ├── apps/               # Streamlit dashboard, FastAPI
-│   │   └── analytics/          # Jupyter notebooks
-│   ├── rust/                   # High-performance data ingestion
-│   │   └── tlc-cli/            # NYC TLC data loader
-│   └── typescript/             # Frontend applications
-│       ├── apps/web/           # MetroHail (consumer app)
-│       ├── apps/analyst/       # MetroAnalyst (AI chat)
-│       └── packages/sdk/       # @metrofleet/sdk
-├── infra/docker/               # Dockerfiles
-├── data/                       # Models, artifacts
-├── docs/                       # Documentation
-└── docker-compose.yml          # Full stack orchestration
-```
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| **Ingestion** | Rust (tlc-cli), Python (httpx) |
-| **Orchestration** | Dagster |
-| **Warehouse** | PostgreSQL 15 |
-| **Transformation** | dbt |
-| **ML Training** | XGBoost, Prophet, Polars |
-| **ML Tracking** | MLflow 3.x |
-| **API** | FastAPI |
-| **Frontend** | Next.js 15, React, Tailwind, Shadcn |
-| **SDK** | TypeScript (@metrofleet/sdk) |
-| **AI** | Vercel AI SDK, Google Gemini |
-| **Maps** | Leaflet, OpenStreetMap |
-| **ORM** | Drizzle (NeonDB) |
-
----
-
 ## Documentation
 
 📚 **[Full Documentation](docs/README.md)**
 
 | Document | Description |
 |----------|-------------|
-| [Setup Guide](docs/SETUP.md) | Local development environment |
-| [Architecture](docs/technical/ARCHITECTURE.md) | System design and data flow |
-| [API Specs](docs/technical/API_SPECS.md) | Endpoint documentation |
-| [Data Dictionary](docs/technical/DATA_DICTIONARY.md) | Schema definitions |
-| [Runbook](docs/operations/RUNBOOK.md) | Operational procedures |
 | [Roadmap](docs/ROADMAP.md) | Project phases and status |
-
----
-
-## Development
-
-```bash
-# Python development
-cd workspaces/python && uv sync
-make dagster-local
-
-# TypeScript development
-cd workspaces/typescript && bun install
-cd apps/web && bun dev
-
-# Rust development
-cd workspaces/rust && cargo build --release
-
-# Run all tests
-make rust-test
-make py-fmt
-```
-
-See `make help` for all available commands.
-
----
+| [Architecture](docs/technical/ARCHITECTURE.md) | System design and data flow |
+| [Data Dictionary](docs/technical/DATA_DICTIONARY.md) | Schema definitions |
+| [Decision Log](docs/technical/DECISION_LOG.md) | Architecture Decision Records (ADR) |
+| [Use Cases](docs/business/USE_CASES.md) | Business problems and solutions |
 
 ## License
 

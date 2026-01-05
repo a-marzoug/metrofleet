@@ -1,0 +1,23 @@
+# Default all files to vendored (hides from language stats)
+* linguist-vendored
+
+# Explicitly include core languages
+*.rs -linguist-vendored
+*.ts -linguist-vendored
+*.tsx -linguist-vendored
+*.py -linguist-vendored
+
+# Mark documentation
+docs/**/* linguist-documentation
+
+# Mark other directories as vendored
+infra/**/* linguist-vendored
+assets/**/* linguist-vendored
+data/**/* linguist-vendored
+workspaces/**/* linguist-vendored
+
+# Override for languages inside workspaces if needed
+workspaces/**/*.rs -linguist-vendored
+workspaces/**/*.ts -linguist-vendored
+workspaces/**/*.tsx -linguist-vendored
+workspaces/**/*.py -linguist-vendored

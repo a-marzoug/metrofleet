@@ -1,9 +1,15 @@
 [project]
 name = "analytics"
 version = "0.1.0"
-description = "Add your description here"
+description = "Analytics and Machine Learning workspace"
 readme = "README.md"
 requires-python = ">=3.13"
+authors = [{ name = "A. Marzoug" }]
+classifiers = [
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3.13",
+]
+urls = { Repository = "https://github.com/a-marzoug/metrofleet" }
 dependencies = [
     "jupyterlab>=4.5.0",
     "pandas>=2.3.3",

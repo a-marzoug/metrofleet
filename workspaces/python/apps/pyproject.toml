@@ -1,9 +1,15 @@
 [project]
 name = "apps"
 version = "0.1.0"
-description = "Add your description here"
+description = "Streamlit Applications and Dashboards"
 readme = "README.md"
 requires-python = ">=3.13"
+authors = [{ name = "A. Marzoug" }]
+classifiers = [
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Programming Language :: Python :: 3.13",
+]
+urls = { Repository = "https://github.com/a-marzoug/metrofleet" }
 dependencies = [
     "streamlit>=1.50.0",
     "plotly>=6.5.0",

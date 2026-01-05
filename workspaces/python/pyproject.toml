@@ -4,39 +4,22 @@ version = "0.1.0"
 description = "Python workspace"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    "connectorx>=0.4.4",
-    "dagster>=1.12.3",
-    "dagster-dbt>=0.28.3",
-    "dagster-postgres>=0.28.3",
-    "dagster-webserver>=1.12.3",
-    "dbt-postgres>=1.9.1",
-    "polars>=1.35.2",
-    "psycopg2-binary>=2.9.11",
-    "pandas>=2.3.3",
-    "pyarrow>=22.0.0",
-    "streamlit>=1.50.0",
-    "plotly>=6.5.0",
-    "sqlalchemy>=2.0.44",
-    "scikit-learn>=1.7.2",
-    "xgboost>=3.1.2",
-    "mlflow>=3.6.0",
-    "jupyterlab>=4.5.0",
-    "matplotlib>=3.10.7",
-    "seaborn>=0.13.2",
-    "python-dotenv>=1.2.1",
-    "fastapi>=0.123.3",
-    "uvicorn[standard]>=0.38.0",
-    "pydantic>=2.12.5",
-    "scipy>=1.16.3",
-    "networkx>=3.6",
-    "httpx>=0.28.1",
-    "holidays>=0.86",
-    "prophet>=1.2.1",
+authors = [{ name = "A. Marzoug" }]
+classifiers = [
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: POSIX :: Linux",
+    "Private :: Do Not Upload",
 ]
+urls = { Repository = "https://github.com/a-marzoug/metrofleet" }
 
 [tool.uv.workspace]
-members = ["pipelines", "analytics", "apps", "apps/api_gateway"]
+members = [
+    "pipelines",
+    "analytics",
+    "apps",
+    "apps/api_gateway",
+    "apps/admin_dashboard",
+]
 
 [dependency-groups]
 dev = ["ruff>=0.14.7"]

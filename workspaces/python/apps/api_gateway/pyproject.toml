@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "Metrofleet Prediction API"
 readme = "README.md"
 requires-python = ">=3.13"
+authors = [{ name = "A. Marzoug" }]
+classifiers = ["Framework :: FastAPI", "Programming Language :: Python :: 3.13"]
+urls = { Repository = "https://github.com/a-marzoug/metrofleet" }
 dependencies = [
     "fastapi>=0.123.3",
     "uvicorn[standard]>=0.38.0",

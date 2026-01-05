@@ -1,9 +1,15 @@
 [project]
 name = "pipelines"
 version = "0.1.0"
-description = "Add your description here"
+description = "Data Pipelines with Dagster and DBT"
 readme = "README.md"
 requires-python = ">=3.13"
+authors = [{ name = "A. Marzoug" }]
+classifiers = [
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Programming Language :: Python :: 3.13",
+]
+urls = { Repository = "https://github.com/a-marzoug/metrofleet" }
 dependencies = [
     "dagster>=1.12.3",
     "dagster-dbt>=0.28.3",

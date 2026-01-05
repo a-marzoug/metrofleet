@@ -7,47 +7,35 @@
 - [x] **Infrastructure:** Dockerized Postgres & Dagster.
 - [x] **Ingestion:** High-performance Rust CLI for TLC data.
 - [x] **Transformation:** dbt project (Staging -> Core -> Marts).
-- [x] **UI:** Streamlit Admin Dashboard for Revenue Analytics.
+- [x] **UI:** Streamlit Admin Dashboard.
 
 ## Phase 2: Dynamic Pricing Engine (✅ Completed)
 
-**Goal:** Predict fare costs to reduce customer abandonment.
+**Goal:** Predict fare costs using Machine Learning.
 
-- [x] **EDA:** Jupyter Notebooks (Polars) to correlate Distance/Time with Price.
-- [x] **Modeling:** Train XGBoost Regression model.
-- [x] **MLOps:** MLflow 3.x for Experiment Tracking.
-- [x] **Automation:** Dagster pipeline to retrain model on new data.
+- [x] **Feature Eng:** Weather (Open-Meteo) & Holiday data enrichment.
+- [x] **Modeling:** XGBoost Regression trained via Polars.
+- [x] **MLOps:** MLflow 3.x for experiment tracking.
 
 ## Phase 3: The Consumer App (✅ Completed)
 
 **Goal:** Allow users to get quotes via an API and Web App.
 
-- [x] **Backend:** FastAPI Microservice to serve `.pkl` model.
-- [x] **Contract:** Open API (Swagger) definition.
-- [x] **SDK:** TypeScript Client Library (`@metrofleet/sdk`).
-- [x] **Frontend:** Next.js + Tailwind React App (Metrohail).
-- [x] **Visualization:** Interactive Map using Leaflet/OpenStreetMap.
-- [x] **Integration:** Full end-to-end flow (UI -> SDK -> API -> Model).
+- [x] **Backend:** FastAPI Microservice serving `.pkl` models.
+- [x] **SDK:** TypeScript Client (`@metrofleet/sdk`).
+- [x] **Frontend:** Next.js 15 + Shadcn UI + Leaflet Maps.
 
-## Phase 3.5: AI Analyst (✅ Completed)
+## Phase 4: Fleet Optimization (✅ Completed)
 
-**Goal:** Enable conversational analytics for non-technical users.
+**Goal:** Predict future demand to reduce driver idle time.
 
-- [x] **UI:** Chat Interface (Next.js + Vercel AI SDK).
-- [x] **Intelligence:** Google Gemini integration for natural language understanding.
-- [x] **Tooling:** Read-only SQL tool for safe database querying.
-- [x] **Safety:** Query validation and row limits.
+- [x] **Forecasting:** Prophet Time-Series model (7-day hourly forecast).
+- [x] **Pipeline:** Dagster asset to generating forecasts per Borough.
+- [x] **Viz:** Forecast tab in Admin Dashboard.
 
-## Phase 4: Fleet Optimization (Planned)
+## Phase 5: Revenue Protection & AI (✅ Completed)
 
-**Goal:** Reduce driver idle time.
+**Goal:** Automated compliance and self-service analytics.
 
-- [ ] **Forecasting:** Time-Series model (Prophet) for demand prediction.
-- [ ] **Visualization:** Heatmap of future demand in Admin Dashboard.
-
-## Phase 5: Driver Experience & Safety (Planned)
-
-**Goal:** Increase driver retention and reduce fraud.
-
-- [ ] **Tipping Insights:** Classification model for high-value zones.
-- [ ] **Anomaly Detection:** Isolation Forest for fraud detection.
+- [x] **Anomaly Detection:** Isolation Forest model to flag fraudulent trips.
+- [x] **AI Analyst:** Generative UI Chatbot (Next.js + Vercel AI SDK + Gemini) for natural language SQL querying.

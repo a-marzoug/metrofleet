@@ -91,8 +91,6 @@ make infra-up
 
 ## Documentation
 
-📚 **[Full Documentation](docs/README.md)**
-
 | Document | Description |
 |----------|-------------|
 | [Roadmap](docs/ROADMAP.md) | Project phases and status |

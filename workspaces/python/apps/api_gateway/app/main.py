@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import APIKeyHeader
 
 from app.api.v1 import api_router
 from app.core import settings
@@ -18,7 +19,16 @@ async def lifespan(app: FastAPI):
     model_manager.clear()
 
 
-app = FastAPI(title=settings.app_name, version=settings.version, lifespan=lifespan)
+app = FastAPI(
+    title=settings.app_name, 
+    version=settings.version, 
+    lifespan=lifespan,
+    # Add API key to Swagger UI
+    openapi_tags=[
+        {"name": "health", "description": "Health check operations"},
+        {"name": "predictions", "description": "Fare prediction operations (requires API key)"}
+    ]
+)
 
 # CORS middleware - allow requests from web app
 app.add_middleware(

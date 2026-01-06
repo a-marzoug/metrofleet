@@ -119,6 +119,8 @@ services:
       - ./workspaces/python/apps/api_gateway:/app
     ports:
       - "8000:8000"
+    environment:
+      API_KEY: ${METROFLEET_API_KEY:-dev-secret-key}
     # Overwrite command for hot-reloading
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     # Fix the Python path so uvicorn finds 'main.py' if mounted differently, 
